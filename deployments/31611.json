@@ -1,0 +1,43 @@
+{
+  "markets": {
+    "main": {
+      "market": "0xfA661547ec7009b4f634A44A02ABA8c20330C607",
+      "pt": "0x3Af12ed51a425A0832cF2807289a75a6B852d4D6",
+      "yt": "0x3006ACBDDB0650041ba002F40051441c5d8B7F6b",
+      "maturity": 1798675200,
+      "maturityIso": "2026-12-31T00:00:00Z",
+      "label": "DEC26",
+      "feeBps": 500,
+      "treasury": "0x8de0eAB64571a1F0289535C3D255F765bf375DAd",
+      "deployTx": "0xc2e9d62b0374415b189fd420f61be0fbd28b6c5d43e3600118de9fa999a74771",
+      "pool": "0x0263c620D49E6d62bE77D5E96D36bBefFCe42423",
+      "seed": {
+        "seed": 1000,
+        "deposit": 1202,
+        "ptSold": 200.30055104501585,
+        "targetApy": 0.12,
+        "spotApy": 0.11825304779766377
+      }
+    },
+    "demo": {
+      "market": "0x2dfEE93bd2D44CcfFc21F490F4cD20E5b77E9497",
+      "pt": "0x42cE03A5FCfA1211cF3216Ae27b47e5Bd447fCbF",
+      "yt": "0x06efdcd6f6b4687611FE8BD2C6163af819fedF73",
+      "maturity": 1794484800,
+      "maturityIso": "2026-11-12T12:00:00Z",
+      "label": "DEMO",
+      "feeBps": 500,
+      "treasury": "0x8de0eAB64571a1F0289535C3D255F765bf375DAd",
+      "deployTx": "0x2797be7369f7a059d4ef18553d267a78ca3fb3ec5602aea22533ed80631da2d3",
+      "pool": "0x6c3baa03b8c825731D66477d959FC2923B4ec771",
+      "seed": {
+        "seed": 20,
+        "deposit": 23,
+        "ptSold": 1.52939553770642,
+        "targetApy": 0.12,
+        "spotApy": 0.030481888743980834
+      }
+    }
+  },
+  "router": "0x8136eeAE97397F69da6755E37a61557b22E9d1Aa"
+}
