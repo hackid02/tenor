@@ -9,7 +9,7 @@ Mezo's savings vault (sMUSD) pays a variable rate: about 5% in April 2026, about
 
 PT trades against MUSD in a concentrated-liquidity pool on Mezo Pools, so every action is one transaction.
 
-> Live on Mezo Testnet. App: _add your Vercel link here_ · On-chain proof: [PROOF.md](PROOF.md)
+> **Live app: [tenorfi.vercel.app](https://tenorfi.vercel.app)** on Mezo Testnet · On-chain proof: [PROOF.md](PROOF.md)
 
 ---
 
@@ -102,7 +102,7 @@ node scripts/export-app.js      # copies ABIs and addresses into app/src/generat
 cd app && npm install && npm run dev
 ```
 
-Deploy the `app` folder on Vercel (framework: Vite). Set `VITE_SITE_URL` to the site's URL so share cards work. `app/vercel.json` sets security headers. After changing an inline script, run `npm run build && npm run headers`.
+Deploy the `app` folder on Vercel (framework: Vite). `VITE_SITE_URL` in `app/.env.production` is the public URL used by share cards and the canonical tag. `app/vercel.json` sets security headers. After changing an inline script, run `npm run build && npm run headers`.
 
 ## The app
 
