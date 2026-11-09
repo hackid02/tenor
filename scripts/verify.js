@@ -17,7 +17,7 @@ async function v(address, constructorArguments, contract) {
 (async () => {
   const cid = Number((await hre.ethers.provider.getNetwork()).chainId);
   const dep = D.load(cid);
-  await v(dep.router, [], "contracts/TenorRouter.sol:TenorRouter");
+  await v(dep.router, dep.routerCL ? [ADDR[cid].clFactory] : [], "contracts/TenorRouter.sol:TenorRouter");
   for (const [key, m] of Object.entries(dep.markets)) {
     await v(m.market, [ADDR[cid].smusd, m.maturity, m.treasury, m.feeBps, m.label], "contracts/TenorMarket.sol:TenorMarket");
     await v(m.pt, [`Tenor PT-sMUSD ${m.label}`, `PT-sMUSD-${m.label}`, false], "contracts/TenorToken.sol:TenorToken");

@@ -10,13 +10,21 @@
       "feeBps": 500,
       "treasury": "0x8de0eAB64571a1F0289535C3D255F765bf375DAd",
       "deployTx": "0xc2e9d62b0374415b189fd420f61be0fbd28b6c5d43e3600118de9fa999a74771",
-      "pool": "0x0263c620D49E6d62bE77D5E96D36bBefFCe42423",
       "seed": {
         "seed": 1000,
         "deposit": 1202,
         "ptSold": 200.30055104501585,
         "targetApy": 0.12,
         "spotApy": 0.11825304779766377
+      },
+      "legacyStablePool": "0x0263c620D49E6d62bE77D5E96D36bBefFCe42423",
+      "pool": "0xe800F28a816025a9F806091fD03Bb65F366f4B88",
+      "clPosition": {
+        "tokenId": "232",
+        "tickLower": -5,
+        "tickUpper": 512,
+        "lowPt": 0.95,
+        "highPt": 1.0005
       }
     },
     "demo": {
@@ -29,15 +37,25 @@
       "feeBps": 500,
       "treasury": "0x8de0eAB64571a1F0289535C3D255F765bf375DAd",
       "deployTx": "0x2797be7369f7a059d4ef18553d267a78ca3fb3ec5602aea22533ed80631da2d3",
-      "pool": "0x6c3baa03b8c825731D66477d959FC2923B4ec771",
       "seed": {
         "seed": 20,
         "deposit": 23,
         "ptSold": 1.52939553770642,
         "targetApy": 0.12,
         "spotApy": 0.030481888743980834
+      },
+      "legacyStablePool": "0x6c3baa03b8c825731D66477d959FC2923B4ec771",
+      "pool": "0x01F57fe87e29Fe6b1413fc7c1602354f97448ccE",
+      "clPosition": {
+        "tokenId": "233",
+        "tickLower": -5,
+        "tickUpper": 50,
+        "lowPt": 0.995,
+        "highPt": 1.0005
       }
     }
   },
-  "router": "0x8136eeAE97397F69da6755E37a61557b22E9d1Aa"
+  "router": "0xf33CE860f9fDb46E5dA2391a9861Ef3D8c5b2169",
+  "legacyStableRouter": "0x8136eeAE97397F69da6755E37a61557b22E9d1Aa",
+  "routerCL": true
 }

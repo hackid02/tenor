@@ -6,8 +6,7 @@
   "scripts": {
     "test": "hardhat test",
     "compile": "hardhat compile",
-    "test:fork": "cross-env FORK=testnet hardhat test",
-    "rehearse": "cross-env FORK=testnet hardhat run scripts/rehearse.js"
+    "test:fork": "cross-env FORK=testnet hardhat test"
   },
   "keywords": [],
   "author": "",

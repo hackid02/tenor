@@ -1,0 +1,76 @@
+{
+  "network": "Mezo Testnet",
+  "wallet": "0x8de0eAB64571a1F0289535C3D255F765bf375DAd",
+  "steps": [
+    {
+      "action": "buyPT",
+      "what": "Fix my yield: 50 MUSD -> 50.7621 PT (locks 11.35% fixed APY; pool was at 12.00%)",
+      "tx": "0x4eb4429400f7d723659c5731a2873f353c81b7a8c54bea06e95379ca2ae72c0e",
+      "link": "https://explorer.test.mezo.org/tx/0x4eb4429400f7d723659c5731a2873f353c81b7a8c54bea06e95379ca2ae72c0e",
+      "block": 16674973,
+      "time": "2026-11-09T15:16:42.185Z",
+      "musdIn": "50",
+      "ptOut": "50.7621",
+      "fixedApy": 0.11349344380166504,
+      "poolApyBefore": 0.12000368959597285
+    },
+    {
+      "action": "sellPT",
+      "what": "Exit early: 20 PT -> 19.7044 MUSD",
+      "tx": "0xfba99c437615618b2772fdba69e04fc61c880da705024434e8f860ca2fba540f",
+      "link": "https://explorer.test.mezo.org/tx/0xfba99c437615618b2772fdba69e04fc61c880da705024434e8f860ca2fba540f",
+      "block": 16674976,
+      "time": "2026-11-09T15:16:49.729Z"
+    },
+    {
+      "action": "cashOutYield",
+      "what": "Sell my future yield: 50 MUSD -> 50 PT kept + 0.7082 MUSD now",
+      "tx": "0x1d7723f8f959b1f307b2626941e315a7068f38695d377f5d5c07f4bace3d930f",
+      "link": "https://explorer.test.mezo.org/tx/0x1d7723f8f959b1f307b2626941e315a7068f38695d377f5d5c07f4bace3d930f",
+      "block": 16674985,
+      "time": "2026-11-09T15:17:28.502Z",
+      "upfrontMusd": "0.7082"
+    },
+    {
+      "action": "buyYT",
+      "what": "Long yield: 0.4224 MUSD -> 30 YT",
+      "tx": "0xae575fb4d65b2bf514e568406eb3a9c5c400d6600459252f84ab5ed71c611dc5",
+      "link": "https://explorer.test.mezo.org/tx/0xae575fb4d65b2bf514e568406eb3a9c5c400d6600459252f84ab5ed71c611dc5",
+      "block": 16674988,
+      "time": "2026-11-09T15:17:42.564Z"
+    },
+    {
+      "action": "sellYT",
+      "what": "Sell yield: 30 YT -> 0.4165 MUSD",
+      "tx": "0x1f8ec4aef5d6fde64b19ffa7d2810c5230fbe74e1452e02a4206dabf5b6fab9e",
+      "link": "https://explorer.test.mezo.org/tx/0x1f8ec4aef5d6fde64b19ffa7d2810c5230fbe74e1452e02a4206dabf5b6fab9e",
+      "block": 16674992,
+      "time": "2026-11-09T15:17:58.873Z"
+    },
+    {
+      "action": "deposit",
+      "what": "Split: 20 MUSD -> 20 PT + 20 YT (into real sMUSD)",
+      "tx": "0x89240bb65ec59e68809f5f3a832b41f07801a8a4d126f65978f6d720ca342866",
+      "link": "https://explorer.test.mezo.org/tx/0x89240bb65ec59e68809f5f3a832b41f07801a8a4d126f65978f6d720ca342866",
+      "block": 16674996,
+      "time": "2026-11-09T15:18:15.023Z"
+    },
+    {
+      "action": "redeemPair",
+      "what": "Merge: 10 PT + 10 YT -> 10 MUSD before maturity",
+      "tx": "0xe133cb021b482f0011b7a093ba753ff1f7326966d55e3dbfeb4b8d9231b09246",
+      "link": "https://explorer.test.mezo.org/tx/0xe133cb021b482f0011b7a093ba753ff1f7326966d55e3dbfeb4b8d9231b09246",
+      "block": 16675000,
+      "time": "2026-11-09T15:18:34.439Z"
+    },
+    {
+      "action": "claimYield",
+      "what": "Claim real sMUSD yield earned by YT: 0.0000 MUSD",
+      "tx": "0x94b25db880386baf1068fba29f76af3d27231efbd58a2dd479ca99e3185b78d8",
+      "link": "https://explorer.test.mezo.org/tx/0x94b25db880386baf1068fba29f76af3d27231efbd58a2dd479ca99e3185b78d8",
+      "block": 16675004,
+      "time": "2026-11-09T15:18:48.208Z",
+      "yieldMusd": "0.0000"
+    }
+  ]
+}

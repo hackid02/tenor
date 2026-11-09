@@ -22,8 +22,10 @@ module.exports = {
     hardhat: fork
       ? { chainId: 31337, forking: { url: RPC[fork] } }
       : {},
-    mezoTestnet: { url: RPC.testnet, chainId: 31611, accounts: PK },
-    mezo: { url: RPC.mainnet, chainId: 31612, accounts: PK },
+    // Gas used varies block to block (pool price observations, Mezo fee
+    // distribution inside sMUSD.deposit). Gas is cheap, so pad estimates 2x.
+    mezoTestnet: { url: RPC.testnet, chainId: 31611, accounts: PK, gasMultiplier: 2 },
+    mezo: { url: RPC.mainnet, chainId: 31612, accounts: PK, gasMultiplier: 2 },
   },
   etherscan: {
     apiKey: { mezoTestnet: "empty", mezo: "empty" },
