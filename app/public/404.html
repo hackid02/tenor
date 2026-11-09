@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found | Tenor</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root { --bg: #f7f7f5; --ink: #15171a; --ink-2: #5d636c; --accent: #0b7a62; --accent-ink: #fff; color-scheme: light; }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) { --bg: #0e1012; --ink: #eceef0; --ink-2: #9aa1aa; --accent: #34c39f; --accent-ink: #04261d; color-scheme: dark; }
+      }
+      :root[data-theme="dark"] { --bg: #0e1012; --ink: #eceef0; --ink-2: #9aa1aa; --accent: #34c39f; --accent-ink: #04261d; color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px;
+        background: var(--bg); color: var(--ink);
+        font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      main { max-width: 420px; }
+      img { display: block; margin-bottom: 28px; }
+      .code { margin: 0 0 6px; color: var(--ink-2); font-size: 14px; font-variant-numeric: tabular-nums; }
+      h1 { margin: 0 0 10px; font-size: 28px; letter-spacing: -0.02em; text-wrap: balance; }
+      p { margin: 0 0 24px; color: var(--ink-2); text-wrap: pretty; }
+      a.btn {
+        display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 10px;
+        background: var(--accent); color: var(--accent-ink); font-weight: 600; text-decoration: none;
+      }
+      a.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    </style>
+    <script>
+      try {
+        var t = localStorage.getItem("tenor-theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <main>
+      <img src="/favicon.svg" width="36" height="36" alt="Tenor" />
+      <p class="code">404</p>
+      <h1>This page doesn’t exist</h1>
+      <p>The link may be mistyped or out of date. Fixed rates on MUSD are on the home page.</p>
+      <a class="btn" href="/">Go to Tenor</a>
+    </main>
+  </body>
+</html>

@@ -5,3 +5,4 @@ artifacts
 coverage
 typechain-types
 deployments/31337.json
+.claude/
