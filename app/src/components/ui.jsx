@@ -96,6 +96,7 @@ export function TxStatus({ tx, scope }) {
     pending: `Confirm in your wallet: ${s.label}`,
     mining: `Waiting for Mezo to confirm: ${s.label}`,
     done: `Done: ${s.label}`,
+    sent: `Sent: ${s.label}. Mezo hasn’t reported it yet; check the explorer in a minute.`,
     error: s.error,
   }[s.status];
   return (
@@ -106,7 +107,7 @@ export function TxStatus({ tx, scope }) {
           Explorer
         </a>
       )}
-      {(s.status === "done" || s.status === "error") && (
+      {(s.status === "done" || s.status === "error" || s.status === "sent") && (
         <button type="button" className="icon-btn" onClick={tx.reset} aria-label="Dismiss">
           ×
         </button>

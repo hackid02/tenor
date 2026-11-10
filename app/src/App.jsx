@@ -30,7 +30,7 @@ export default function App() {
           <p className="status error" role="alert">Can’t reach Mezo Testnet right now. Retrying every 15 seconds.</p>
         )}
         <div className="top">
-          <Market t={t} history={history} marketKey={marketKey} setMarketKey={setMarketKey} />
+          <Market t={t} history={history} marketKey={marketKey} setMarketKey={(k) => { tx.reset(); setMarketKey(k); }} />
           <TradeCard key={marketKey} t={t} tx={tx} />
         </div>
         <div className="lower">

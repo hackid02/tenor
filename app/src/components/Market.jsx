@@ -41,8 +41,16 @@ export function Market({ t, history, marketKey, setMarketKey }) {
       <LiveStatus />
       <p className="eyebrow">PT-sMUSD · Mezo MUSD Savings Vault</p>
       <h1 id="market-title">
-        {t.ready ? <span key={percent(t.apy)} className="apy num tick">{percent(t.apy)}</span> : <Skeleton w="5.5ch" h="0.9em" />}
-        <span className="apy-label">fixed on MUSD until {date(m.maturity)}</span>
+        {!t.ready ? (
+          <Skeleton w="5.5ch" h="0.9em" />
+        ) : t.apy != null && t.apy > 0 ? (
+          <span key={percent(t.apy)} className="apy num tick">{percent(t.apy)}</span>
+        ) : (
+          <span className="apy apy-none">No fixed yield now</span>
+        )}
+        <span className="apy-label">
+          {t.ready && !(t.apy > 0) ? `PT costs ${t.view.ptPrice.toFixed(4)} MUSD, at or above its value on ${date(m.maturity)}` : `fixed on MUSD until ${date(m.maturity)}`}
+        </span>
       </h1>
       <p className="lede">
         Mezo’s savings vault pays a variable rate. Buy PT to lock today’s rate until maturity, or sell the yield

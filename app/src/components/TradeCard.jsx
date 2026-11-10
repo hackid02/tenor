@@ -59,6 +59,9 @@ function check(input, balance, unit, quote) {
   const a = wei ? Number(input) : 0;
   if (!wei) return [0, null, "Enter an amount"];
   if (quote.error) return [a, null, "Can’t get a price right now"];
+  if (quote.data && quote.data.noGain) {
+    return [a, "PT costs 1 MUSD or more right now, so there is no fixed yield to lock or sell. It redeems for 1 MUSD at maturity.", "No fixed yield at this price"];
+  }
   if (quote.data && !quote.data.ok) {
     const max = Math.floor(quote.data.max * 100) / 100;
     const msg = max > 0 ? `The pool can fill up to ${amount(max)} ${unit} right now.` : "The pool has no liquidity for this trade right now.";
@@ -98,7 +101,7 @@ function FixForm({ t, tx }) {
         <Row k="Fixed return" v={q?.ok ? `+${amount(q.gain, 4)} MUSD` : dash} strong />
         <Row k="Fixed APY" v={q?.ok ? percent(q.apy) : dash} strong />
       </div>
-      <FixChart musdIn={q?.ok ? a : 0} valueAtMaturity={q?.ok ? q.pt : 0} apy={q?.ok ? q.apy : 0} maturity={t.m.maturity} />
+      {q?.ok && <FixChart musdIn={a} valueAtMaturity={q.pt} apy={q.apy} maturity={t.m.maturity} />}
       <ActionButton
         tx={tx}
         scope="fix"

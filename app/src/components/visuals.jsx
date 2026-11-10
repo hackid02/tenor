@@ -53,7 +53,9 @@ export function RateCompare({ fixed, variable, loading, maturity }) {
   const max = Math.max(fixed ?? 0, variable ?? 0, 0.0001);
   const w = (v) => `${Math.max(2, (Math.max(0, v ?? 0) / max) * 100)}%`;
   let verdict = null;
-  if (fixed != null && variable != null) {
+  if (fixed != null && fixed <= 0) {
+    verdict = "PT trades at or above 1 MUSD right now, so there is no fixed yield to lock on this maturity.";
+  } else if (fixed != null && variable != null) {
     const d = fixed - variable;
     verdict =
       Math.abs(d) < 0.0025
@@ -67,7 +69,7 @@ export function RateCompare({ fixed, variable, loading, maturity }) {
       <div className="cmp-row">
         <div className="cmp-label">
           <span>Tenor fixed</span>
-          <span className="num">{percent(fixed)}</span>
+          <span className="num">{fixed != null && fixed <= 0 ? "None now" : percent(fixed)}</span>
         </div>
         <div className="cmp-track"><div className="cmp-bar fixed" style={{ width: w(fixed) }} /></div>
       </div>

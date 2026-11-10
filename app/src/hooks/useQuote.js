@@ -48,16 +48,18 @@ export function useQuote(t, kind, input) {
           .simulateContract({ address: CHAIN.quoter, abi: ABI.quoter, functionName: fn, args: [t.m.pool, t.m.pt, amount, limit] })
           .then((r) => r.result);
       const a = n(wei);
+      // PT at or above 1 MUSD: nothing to fix or sell at any size.
+      const flat = t.view.ptPrice >= 0.9999;
       switch (kind) {
         case "fix": {
           const r = await call("quoteBuyPT", wei, up);
           const pt = n(r.amountOut);
-          return { ok: r.filled && pt > a, pt, gain: pt - a, apy: apyFromPrice(a / pt, t.secondsLeft), max: n(r.amountIn) };
+          return { ok: r.filled && pt > a, noGain: flat || (r.filled && pt <= a), pt, gain: pt - a, apy: apyFromPrice(a / pt, t.secondsLeft), max: n(r.amountIn) };
         }
         case "cash": {
           const r = await call("quoteExactPT", wei, up);
           const cost = n(r.amountIn);
-          return { ok: r.filled && cost < a, now: Math.max(0, a - cost), pt: a, max: n(r.amountOut) };
+          return { ok: r.filled && cost < a, noGain: flat || (r.filled && cost >= a), now: Math.max(0, a - cost), pt: a, max: n(r.amountOut) };
         }
         case "buyYT": {
           const r = await call("quoteSellPT", wei, down);
@@ -66,7 +68,7 @@ export function useQuote(t, kind, input) {
         case "sellYT": {
           const r = await call("quoteExactPT", wei, up);
           const cost = n(r.amountIn);
-          return { ok: r.filled && cost < a, out: Math.max(0, a - cost), max: n(r.amountOut) };
+          return { ok: r.filled && cost < a, noGain: flat || (r.filled && cost >= a), out: Math.max(0, a - cost), max: n(r.amountOut) };
         }
         case "sellPT": {
           const r = await call("quoteSellPT", wei, down);
