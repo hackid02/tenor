@@ -2,13 +2,15 @@ import { useAccount } from "wagmi";
 import { ABI, CHAIN } from "../config";
 import { ME } from "../hooks/useTx";
 import { amount, date, numToWei } from "../lib/format";
-import { quoteSellPT } from "../lib/quote";
+import { useQuote } from "../hooks/useQuote";
+import { formatEther } from "viem";
 import { Row, TxStatus } from "./ui";
 
 export function Position({ t, tx }) {
   const { isConnected } = useAccount();
   const scope = "pos";
-  const exit = t.ready && t.pt > 0 && !t.matured ? quoteSellPT(t.view, t.pt) : null;
+  const exitQuote = useQuote(t, "sellPT", t.raw.pt > 0n && !t.matured ? formatEther(t.raw.pt) : "");
+  const exit = exitQuote.data;
   const pair = t.raw.pt < t.raw.yt ? t.raw.pt : t.raw.yt;
   const send = (label, req) => tx.send(scope, label, req);
 

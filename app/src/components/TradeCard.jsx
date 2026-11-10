@@ -3,7 +3,7 @@ import { useAccount } from "wagmi";
 import { ABI, CHAIN, LINKS } from "../config";
 import { ME } from "../hooks/useTx";
 import { amount, date, numToWei, percent, toWei } from "../lib/format";
-import { maxSize, quoteBuyYT, quoteCashOut, quoteFix, quoteSellYT } from "../lib/quote";
+import { useQuote } from "../hooks/useQuote";
 import { ActionButton, AmountField, Row } from "./ui";
 import { FixChart } from "./visuals";
 
@@ -52,18 +52,20 @@ export function TradeCard({ t, tx }) {
 
 /**
  * Shared checks: returns [amountNumber, fieldError, blocker].
- * quoteFn(view, x) is used to find the largest size the pool can fill.
+ * `quote` comes from useQuote: exact, from the on-chain quoter.
  */
-function check(t, input, balance, unit, quoteOk, quoteFn) {
+function check(input, balance, unit, quote) {
   const wei = toWei(input);
   const a = wei ? Number(input) : 0;
   if (!wei) return [0, null, "Enter an amount"];
-  if (t.ready && quoteOk === false) {
-    const max = maxSize(t.view, quoteFn);
+  if (quote.error) return [a, null, "Can’t get a price right now"];
+  if (quote.data && !quote.data.ok) {
+    const max = Math.floor(quote.data.max * 100) / 100;
     const msg = max > 0 ? `The pool can fill up to ${amount(max)} ${unit} right now.` : "The pool has no liquidity for this trade right now.";
     return [a, msg, "Amount too large for the pool"];
   }
   if (balance !== null && a > balance + 1e-12) return [a, `You have ${amount(balance)} ${unit}.`, `Not enough ${unit}`];
+  if (!quote.data || !quote.current) return [a, null, "Getting the price…"];
   return [a, null, null];
 }
 
@@ -81,19 +83,20 @@ function NoMusd({ t }) {
 function FixForm({ t, tx }) {
   const [input, setInput] = useState("100");
   const { isConnected } = useAccount();
-  const n = Number(input) || 0;
-  const q = t.ready && n > 0 ? quoteFix(t.view, n, t.secondsLeft) : null;
-  const [a, err, blocker] = check(t, input, isConnected ? t.musd : null, "MUSD", q?.ok, (v, x) => quoteFix(v, x, t.secondsLeft));
+  const quote = useQuote(t, "fix", input);
+  const q = quote.current ? quote.data : null;
+  const dash = quote.data && !quote.current ? "…" : "–";
+  const [a, err, blocker] = check(input, isConnected ? t.musd : null, "MUSD", quote);
   const maturity = date(t.m.maturity);
   return (
     <div className="form">
       <AmountField id="fix-in" label="You pay" value={input} onChange={setInput} unit="MUSD" balance={t.musd} error={err} />
       <NoMusd t={t} />
       <div className="quote" aria-live="polite">
-        <Row k="You get" v={q?.ok ? `${amount(q.pt, 4)} PT` : "–"} />
-        <Row k={`Worth on ${maturity}`} v={q?.ok ? `${amount(q.pt, 4)} MUSD` : "–"} />
-        <Row k="Fixed return" v={q?.ok ? `+${amount(q.gain, 4)} MUSD` : "–"} strong />
-        <Row k="Fixed APY" v={q?.ok ? percent(q.apy) : "–"} strong />
+        <Row k="You get" v={q?.ok ? `${amount(q.pt, 4)} PT` : dash} />
+        <Row k={`Worth on ${maturity}`} v={q?.ok ? `${amount(q.pt, 4)} MUSD` : dash} />
+        <Row k="Fixed return" v={q?.ok ? `+${amount(q.gain, 4)} MUSD` : dash} strong />
+        <Row k="Fixed APY" v={q?.ok ? percent(q.apy) : dash} strong />
       </div>
       <FixChart musdIn={q?.ok ? a : 0} valueAtMaturity={q?.ok ? q.pt : 0} apy={q?.ok ? q.apy : 0} maturity={t.m.maturity} />
       <ActionButton
@@ -123,17 +126,18 @@ function FixForm({ t, tx }) {
 function CashForm({ t, tx }) {
   const [input, setInput] = useState("100");
   const { isConnected } = useAccount();
-  const n = Number(input) || 0;
-  const q = t.ready && n > 0 ? quoteCashOut(t.view, n) : null;
-  const [a, err, blocker] = check(t, input, isConnected ? t.musd : null, "MUSD", q?.ok, quoteCashOut);
+  const quote = useQuote(t, "cash", input);
+  const q = quote.current ? quote.data : null;
+  const dash = quote.data && !quote.current ? "…" : "–";
+  const [a, err, blocker] = check(input, isConnected ? t.musd : null, "MUSD", quote);
   const maturity = date(t.m.maturity);
   return (
     <div className="form">
       <AmountField id="cash-in" label="You deposit" value={input} onChange={setInput} unit="MUSD" balance={t.musd} error={err} />
       <NoMusd t={t} />
       <div className="quote" aria-live="polite">
-        <Row k="MUSD to you now" v={q?.ok ? `${amount(q.now, 4)} MUSD` : "–"} strong />
-        <Row k={`PT you keep, worth on ${maturity}`} v={q?.ok ? `${amount(q.pt, 2)} MUSD` : "–"} />
+        <Row k="MUSD to you now" v={q?.ok ? `${amount(q.now, 4)} MUSD` : dash} strong />
+        <Row k={`PT you keep, worth on ${maturity}`} v={q?.ok ? `${amount(q.pt, 2)} MUSD` : dash} />
         <Row k="You give up" v="sMUSD yield until maturity" />
       </div>
       <ActionButton
@@ -161,16 +165,15 @@ function YtForm({ t, tx }) {
   const [side, setSide] = useState("buy");
   const [input, setInput] = useState("100");
   const { isConnected } = useAccount();
-  const n = Number(input) || 0;
   const buy = side === "buy";
-  const qb = t.ready && n > 0 && buy ? quoteBuyYT(t.view, n) : null;
-  const qs = t.ready && n > 0 && !buy ? quoteSellYT(t.view, n) : null;
-  const q = buy ? qb : qs;
+  const quote = useQuote(t, buy ? "buyYT" : "sellYT", input);
+  const live = quote.current ? quote.data : null;
+  const qb = buy ? live : null;
+  const qs = buy ? null : live;
+  const dash = quote.data && !quote.current ? "…" : "–";
   const cost = qb?.ok ? qb.cost : 0;
   // Buying is limited by MUSD (the cost), selling by YT held.
-  const [a, err, blocker0] = buy
-    ? check(t, input, null, "YT", q?.ok, quoteBuyYT)
-    : check(t, input, isConnected ? t.yt : null, "YT", q?.ok, quoteSellYT);
+  const [a, err, blocker0] = check(input, buy ? null : isConnected ? t.yt : null, "YT", quote);
   const blocker = blocker0 || (buy && isConnected && cost > t.musd ? "Not enough MUSD" : null);
   const scope = "yt";
 
@@ -196,12 +199,12 @@ function YtForm({ t, tx }) {
       <div className="quote" aria-live="polite">
         {buy ? (
           <>
-            <Row k="Cost" v={qb?.ok ? `${amount(qb.cost, 4)} MUSD` : "–"} strong />
+            <Row k="Cost" v={qb?.ok ? `${amount(qb.cost, 4)} MUSD` : dash} strong />
             <Row k="You earn" v={`sMUSD yield on ${amount(a, 0)} MUSD`} />
             <Row k="Profitable if sMUSD averages above" v={percent(t.apy)} />
           </>
         ) : (
-          <Row k="You get" v={qs?.ok ? `${amount(qs.out, 4)} MUSD` : "–"} strong />
+          <Row k="You get" v={qs?.ok ? `${amount(qs.out, 4)} MUSD` : dash} strong />
         )}
       </div>
       <ActionButton

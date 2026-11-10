@@ -7,10 +7,12 @@ Everything below is live on **Mezo Testnet** (chain 31611) and can be checked on
 | Contract | Address |
 |---|---|
 | TenorRouter (Mezo CL pools) | [`0xf33CE860f9fDb46E5dA2391a9861Ef3D8c5b2169`](https://explorer.test.mezo.org/address/0xf33CE860f9fDb46E5dA2391a9861Ef3D8c5b2169) |
+| TenorQuoter (exact read-only quotes) | [`0x49651D147fc0a6885910749C67dbc4c92A1e0C28`](https://explorer.test.mezo.org/address/0x49651D147fc0a6885910749C67dbc4c92A1e0C28) |
 | TenorMarket `main` (DEC26, matures 2026-12-31) | [`0xfA661547ec7009b4f634A44A02ABA8c20330C607`](https://explorer.test.mezo.org/address/0xfA661547ec7009b4f634A44A02ABA8c20330C607) |
 | PT-sMUSD-DEC26 | [`0x3Af12ed51a425A0832cF2807289a75a6B852d4D6`](https://explorer.test.mezo.org/address/0x3Af12ed51a425A0832cF2807289a75a6B852d4D6) |
 | YT-sMUSD-DEC26 | [`0x3006ACBDDB0650041ba002F40051441c5d8B7F6b`](https://explorer.test.mezo.org/address/0x3006ACBDDB0650041ba002F40051441c5d8B7F6b) |
 | PT/MUSD CL pool on Mezo Pools (DEC26, PT range 0.95–1.0005) | [`0xe800F28a816025a9F806091fD03Bb65F366f4B88`](https://explorer.test.mezo.org/address/0xe800F28a816025a9F806091fD03Bb65F366f4B88) |
+| Extra one-sided PT liquidity (700.0 PT, DEC26) | [tx 0x19cfca3c…](https://explorer.test.mezo.org/tx/0x19cfca3c45eb2d7a7fda939fd596b04cd461f94563c781c0dd01c916840f9984) |
 | TenorMarket `demo` (DEMO, matures 2026-11-12) | [`0x2dfEE93bd2D44CcfFc21F490F4cD20E5b77E9497`](https://explorer.test.mezo.org/address/0x2dfEE93bd2D44CcfFc21F490F4cD20E5b77E9497) |
 | PT-sMUSD-DEMO | [`0x42cE03A5FCfA1211cF3216Ae27b47e5Bd447fCbF`](https://explorer.test.mezo.org/address/0x42cE03A5FCfA1211cF3216Ae27b47e5Bd447fCbF) |
 | YT-sMUSD-DEMO | [`0x06efdcd6f6b4687611FE8BD2C6163af819fedF73`](https://explorer.test.mezo.org/address/0x06efdcd6f6b4687611FE8BD2C6163af819fedF73) |

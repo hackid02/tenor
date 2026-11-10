@@ -25,7 +25,16 @@
         "tickUpper": 512,
         "lowPt": 0.95,
         "highPt": 1.0005
-      }
+      },
+      "extraPositions": [
+        {
+          "tokenId": "263",
+          "tickLower": -5,
+          "tickUpper": 133,
+          "pt": "700.0",
+          "tx": "0x19cfca3c45eb2d7a7fda939fd596b04cd461f94563c781c0dd01c916840f9984"
+        }
+      ]
     },
     "demo": {
       "market": "0x2dfEE93bd2D44CcfFc21F490F4cD20E5b77E9497",
@@ -57,5 +66,6 @@
   },
   "router": "0xf33CE860f9fDb46E5dA2391a9861Ef3D8c5b2169",
   "legacyStableRouter": "0x8136eeAE97397F69da6755E37a61557b22E9d1Aa",
-  "routerCL": true
+  "routerCL": true,
+  "quoter": "0x49651D147fc0a6885910749C67dbc4c92A1e0C28"
 }

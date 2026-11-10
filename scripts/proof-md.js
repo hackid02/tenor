@@ -22,11 +22,13 @@ lines.push("");
 lines.push("| Contract | Address |");
 lines.push("|---|---|");
 lines.push(`| TenorRouter (Mezo CL pools) | ${addr(dep.router)} |`);
+if (dep.quoter) lines.push(`| TenorQuoter (exact read-only quotes) | ${addr(dep.quoter)} |`);
 for (const [key, m] of Object.entries(dep.markets)) {
   lines.push(`| TenorMarket \`${key}\` (${m.label}, matures ${m.maturityIso.slice(0, 10)}) | ${addr(m.market)} |`);
   lines.push(`| PT-sMUSD-${m.label} | ${addr(m.pt)} |`);
   lines.push(`| YT-sMUSD-${m.label} | ${addr(m.yt)} |`);
   if (m.pool) lines.push(`| PT/MUSD CL pool on Mezo Pools (${m.label}, PT range ${m.clPosition.lowPt}–${m.clPosition.highPt}) | ${addr(m.pool)} |`);
+  for (const x of m.extraPositions || []) lines.push(`| Extra one-sided PT liquidity (${x.pt} PT, ${m.label}) | [tx ${x.tx.slice(0, 10)}…](${A.explorer}/tx/${x.tx}) |`);
 }
 lines.push("");
 lines.push("## Mezo contracts Tenor builds on");

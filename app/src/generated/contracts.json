@@ -834,6 +834,231 @@
         "type": "function"
       }
     ],
+    "quoter": [
+      {
+        "inputs": [
+          {
+            "internalType": "int256",
+            "name": "amount0",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "amount1",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint160",
+            "name": "sqrtPriceAfterX96",
+            "type": "uint160"
+          }
+        ],
+        "name": "Quote",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          }
+        ],
+        "name": "UnexpectedRevert",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "contract ICLPool",
+            "name": "pool",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "pt",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "musdIn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint160",
+            "name": "limit",
+            "type": "uint160"
+          }
+        ],
+        "name": "quoteBuyPT",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amountOut",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "filled",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint160",
+                "name": "sqrtPriceAfterX96",
+                "type": "uint160"
+              }
+            ],
+            "internalType": "struct TenorQuoter.Result",
+            "name": "r",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "contract ICLPool",
+            "name": "pool",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "pt",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ptOut",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint160",
+            "name": "limit",
+            "type": "uint160"
+          }
+        ],
+        "name": "quoteExactPT",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amountOut",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "filled",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint160",
+                "name": "sqrtPriceAfterX96",
+                "type": "uint160"
+              }
+            ],
+            "internalType": "struct TenorQuoter.Result",
+            "name": "r",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "contract ICLPool",
+            "name": "pool",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "pt",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ptIn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint160",
+            "name": "limit",
+            "type": "uint160"
+          }
+        ],
+        "name": "quoteSellPT",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amountOut",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "filled",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint160",
+                "name": "sqrtPriceAfterX96",
+                "type": "uint160"
+              }
+            ],
+            "internalType": "struct TenorQuoter.Result",
+            "name": "r",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "int256",
+            "name": "amount0Delta",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "amount1Delta",
+            "type": "int256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "",
+            "type": "bytes"
+          }
+        ],
+        "name": "uniswapV3SwapCallback",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
     "token": [
       {
         "inputs": [
@@ -1246,6 +1471,7 @@
       "clSwapRouter": "0x3112908bB72ce9c26a321Eeb22EC8e051F3b6E6a",
       "explorer": "https://explorer.test.mezo.org",
       "router": "0xf33CE860f9fDb46E5dA2391a9861Ef3D8c5b2169",
+      "quoter": "0x49651D147fc0a6885910749C67dbc4c92A1e0C28",
       "markets": {
         "main": {
           "market": "0xfA661547ec7009b4f634A44A02ABA8c20330C607",

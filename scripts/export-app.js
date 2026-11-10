@@ -14,6 +14,7 @@ async function main() {
     abi: {
       market: art("TenorMarket.sol", "TenorMarket"),
       router: art("TenorRouter.sol", "TenorRouter"),
+      quoter: art("TenorQuoter.sol", "TenorQuoter"),
       token: art("TenorToken.sol", "TenorToken"),
     },
     chains: {},
@@ -51,7 +52,7 @@ async function main() {
         range: m.clPosition ? [m.clPosition.lowPt, m.clPosition.highPt] : null,
       };
     }
-    out.chains[cid] = { ...ADDR[cid], router: dep.router, markets };
+    out.chains[cid] = { ...ADDR[cid], router: dep.router, quoter: dep.quoter, markets };
   }
 
   const dest = path.join(root, "app", "src", "generated", "contracts.json");

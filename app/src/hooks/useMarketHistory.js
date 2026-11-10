@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createPublicClient, decodeFunctionData, formatEther, http, parseAbiItem } from "viem";
+import { createPublicClient, decodeFunctionData, formatEther, http, parseAbiItem, parseEventLogs } from "viem";
 import { ABI, CHAIN, mezoTestnet } from "../config";
 import { apyFromPrice } from "../lib/quote";
 
@@ -10,6 +10,27 @@ const Q96 = 2 ** 96;
 // JSON-RPC batching: many lookups go out as one HTTP request.
 const client = createPublicClient({ chain: mezoTestnet, transport: http(undefined, { batch: { batchSize: 50, wait: 16 } }) });
 const n = (x) => Number(formatEther(x < 0n ? -x : x));
+
+// Mezo's RPC rejects log queries spanning more than 10,000 blocks, so history
+// is read in windows. Logs already read are kept; each poll only reads new blocks.
+const WINDOW = 9_000n;
+const logCache = new Map();
+
+async function logsSince(m) {
+  const prev = logCache.get(m.market) || { to: BigInt(m.startBlock) - 1n, logs: [] };
+  const latest = await client.getBlockNumber();
+  const windows = [];
+  for (let from = prev.to + 1n; from <= latest; from += WINDOW) {
+    windows.push([from, from + WINDOW - 1n < latest ? from + WINDOW - 1n : latest]);
+  }
+  // One request per window covers both the pool and the market.
+  const chunks = await Promise.all(
+    windows.map(([fromBlock, toBlock]) => client.getLogs({ address: [m.pool, m.market], fromBlock, toBlock }))
+  );
+  const next = { to: latest, logs: prev.logs.concat(chunks.flat()) };
+  logCache.set(m.market, next);
+  return next.logs;
+}
 
 // Transactions and block times never change, so cache them across polls.
 const txCache = new Map();
@@ -92,14 +113,16 @@ export function useMarketHistory(m) {
     refetchInterval: 20_000,
     retry: 1,
     queryFn: async () => {
-      const fromBlock = BigInt(m.startBlock);
       const marketEvents = ABI.market.filter((x) => x.type === "event" && ["Deposited", "PairRedeemed", "PTRedeemed", "YieldClaimed"].includes(x.name));
-      const [swaps, inits, mlogs, token0] = await Promise.all([
-        client.getLogs({ address: m.pool, event: SWAP, fromBlock }),
-        client.getLogs({ address: m.pool, event: INIT, fromBlock }),
-        client.getLogs({ address: m.market, events: marketEvents, fromBlock }),
+      const [raw, token0] = await Promise.all([
+        logsSince(m),
         client.readContract({ address: m.pool, abi: [{ type: "function", name: "token0", stateMutability: "view", inputs: [], outputs: [{ type: "address" }] }], functionName: "token0" }),
       ]);
+      const from = (a) => raw.filter((l) => l.address.toLowerCase() === a.toLowerCase());
+      const poolLogs = from(m.pool);
+      const swaps = parseEventLogs({ abi: [SWAP], logs: poolLogs });
+      const inits = parseEventLogs({ abi: [INIT], logs: poolLogs });
+      const mlogs = parseEventLogs({ abi: marketEvents, logs: from(m.market) });
       const ptIs0 = token0.toLowerCase() === m.pt.toLowerCase();
 
       // Rate history: opening price, then the price after every swap.

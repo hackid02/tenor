@@ -44,6 +44,7 @@ All contracts are verified on the [Mezo testnet explorer](https://explorer.test.
 | Contract | Address |
 |---|---|
 | TenorRouter | [`0xf33CE860f9fDb46E5dA2391a9861Ef3D8c5b2169`](https://explorer.test.mezo.org/address/0xf33CE860f9fDb46E5dA2391a9861Ef3D8c5b2169) |
+| TenorQuoter (read-only quotes) | [`0x49651D147fc0a6885910749C67dbc4c92A1e0C28`](https://explorer.test.mezo.org/address/0x49651D147fc0a6885910749C67dbc4c92A1e0C28) |
 | TenorMarket, matures Dec 31, 2026 | [`0xfA661547ec7009b4f634A44A02ABA8c20330C607`](https://explorer.test.mezo.org/address/0xfA661547ec7009b4f634A44A02ABA8c20330C607) |
 | PT-sMUSD-DEC26 | [`0x3Af12ed51a425A0832cF2807289a75a6B852d4D6`](https://explorer.test.mezo.org/address/0x3Af12ed51a425A0832cF2807289a75a6B852d4D6) |
 | YT-sMUSD-DEC26 | [`0x3006ACBDDB0650041ba002F40051441c5d8B7F6b`](https://explorer.test.mezo.org/address/0x3006ACBDDB0650041ba002F40051441c5d8B7F6b) |
@@ -61,6 +62,7 @@ MUSD ──► sMUSD ──┤
 ```
 
 - **`TenorMarket`** (one per maturity) deposits MUSD into sMUSD and mints PT and YT 1:1. It claims sMUSD's MUSD yield and distributes it to YT holders with a per-token accumulator. YT transfers checkpoint both sides first, so yield earned before a transfer stays with the sender.
+- **`TenorQuoter`** gives the app exact quotes: it runs the real pool swap and reverts inside the swap callback with the result, so it is correct for any liquidity in the pool and never moves funds. It also reports the largest size the pool can fill.
 - **`TenorRouter`** does every trade in one transaction through the PT/MUSD pool's swap callback. Selling YT buys back exactly that much PT, merges PT + YT into MUSD and pays the pool from it. Buying YT sells freshly minted PT into the pool to fund the deposit.
 - **Invariant:** `sMUSD.balanceOf(market) == PT.totalSupply()`. PT is always fully backed.
 
@@ -71,6 +73,10 @@ MUSD ──► sMUSD ──┤
 - **Concentrated liquidity, not a stable pool.** Tenor first used a Mezo stable pool. Those pools hold liquidity at a price of exactly 1, but PT trades at about 0.984, so a few small trades moved the fixed APY from 11.8% to 2.4%. With the same liquidity in a CL range, a 50 MUSD purchase locks 11.35% against a 12.00% quote. The first transactions are kept in [`proof/31611-stable-pool-v1.json`](proof/31611-stable-pool-v1.json).
 - **Edge cases from sMUSD's source.** `sMUSD.withdraw` also pays out pending yield, and `sMUSD.deposit` can trigger a protocol-fee distribution. The market harvests in the right order so that yield always goes to the YT holders who earned it. Both cases have tests.
 - **Gas.** Gas used on Mezo varies block to block (pool observations, fee distribution inside sMUSD), so the scripts and app double the gas estimate. Gas costs fractions of a cent.
+
+## Try it
+
+A 5-minute guide with free testnet tokens: [docs/TESTING.md](docs/TESTING.md).
 
 ## Tests
 
@@ -106,7 +112,8 @@ Deploy the `app` folder on Vercel (framework: Vite). `VITE_SITE_URL` in `app/.en
 
 ## The app
 
-- Quotes are computed in the browser from the pool's price and liquidity (concentrated-liquidity math, checked against on-chain simulation to 4 decimals). Every trade is simulated on-chain before it is sent, with a slippage limit.
+- Quotes come from `TenorQuoter` on-chain, so they match the router to the wei (checked on 12 trades: `scripts/check-quoter.js`). Every trade is also simulated before it is sent, with a slippage limit.
+- Mezo's RPC limits log queries to 10,000 blocks, so the app reads history in windows and then only new blocks.
 - Live data: the fixed rate, the sMUSD rate on Mezo mainnet over the last 7 days, the rate after every trade, and every Tenor transaction, read directly from the chain.
 - No backend, no cookies, no tracking.
 
