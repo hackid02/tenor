@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tenor: fixed rates on Mezo MUSD</title>
+<style>
+  @page { size: 1600px 900px; margin: 0; }
+  :root {
+    --bg: #f7f7f5; --ink: #15171a; --ink2: #5d636c; --line: #e3e3de; --accent: #0b7a62; --soft: #e4f1ec; --surface: #fff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #ddd; }
+  body { font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide {
+    width: 1600px; height: 900px; padding: 88px 104px; background: var(--bg); position: relative; overflow: hidden;
+    page-break-after: always; break-after: page; display: flex; flex-direction: column;
+  }
+  .slide:last-child { page-break-after: auto; }
+  .num { font-variant-numeric: tabular-nums; }
+  .brand { position: absolute; left: 104px; bottom: 48px; display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 20px; color: var(--ink2); }
+  .pg { position: absolute; right: 104px; bottom: 48px; font-size: 18px; color: var(--ink2); }
+  .eyebrow { font-size: 22px; font-weight: 600; color: var(--accent); margin: 0 0 18px; }
+  h1 { font-size: 76px; line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 24px; font-weight: 700; }
+  h2 { font-size: 54px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 36px; font-weight: 700; max-width: 1250px; }
+  p.lead { font-size: 28px; line-height: 1.45; color: var(--ink2); max-width: 1100px; margin: 0; }
+  .accent { color: var(--accent); }
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 32px; }
+  .card h3 { margin: 0 0 12px; font-size: 28px; }
+  .card p { margin: 0; font-size: 22px; line-height: 1.45; color: var(--ink2); }
+  .big { font-size: 64px; font-weight: 700; letter-spacing: -0.02em; color: var(--accent); }
+  table { border-collapse: collapse; width: 100%; font-size: 23px; }
+  td { padding: 15px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:first-child { font-weight: 650; width: 34%; padding-right: 24px; }
+  td:last-child { color: var(--ink2); }
+  .badge { display: inline-grid; place-items: center; min-width: 46px; height: 46px; padding: 0 10px; border-radius: 999px; font-weight: 750; font-size: 18px; }
+  .b-m { background: var(--ink); color: #fff; } .b-pt { background: var(--accent); color: #fff; } .b-yt { color: var(--accent); box-shadow: inset 0 0 0 2.5px var(--accent); }
+  .flow { display: flex; align-items: center; gap: 26px; margin: 10px 0 44px; }
+  .node { display: flex; align-items: center; gap: 16px; padding: 22px 26px; background: var(--surface); border: 1.5px solid #cfcfc8; border-radius: 18px; }
+  .node b { display: block; font-size: 26px; } .node span { display: block; font-size: 19px; color: var(--ink2); }
+  .node.pt { border-color: var(--accent); background: var(--soft); } .node.yt { border: 2px dashed var(--accent); }
+  .arrow { font-size: 34px; color: var(--accent); }
+  .outs { display: grid; gap: 18px; }
+  .shot { flex: 1; min-height: 0; border-radius: 18px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,.12); }
+  .shot img { width: 100%; display: block; }
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 34px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 26px 28px; }
+  .stat .v { font-size: 50px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+  .stat .l { font-size: 20px; color: var(--ink2); margin-top: 6px; line-height: 1.35; }
+  ul.plain { margin: 0; padding-left: 28px; font-size: 25px; line-height: 1.55; color: var(--ink2); }
+  ul.plain li { margin-bottom: 8px; } ul.plain b { color: var(--ink); }
+  .title-slide { justify-content: center; }
+  .logo-row { display: flex; align-items: center; gap: 20px; margin-bottom: 56px; font-size: 40px; font-weight: 700; }
+  .meta { margin-top: 56px; font-size: 24px; color: var(--ink2); display: flex; gap: 40px; flex-wrap: wrap; }
+  .meta b { color: var(--ink); font-weight: 650; }
+  .tag { display: inline-block; font-size: 17px; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: var(--soft); color: var(--accent); margin-left: 10px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- Logo: split coin. Solid half = PT (fixed), dashed half = YT (variable). -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="mark" viewBox="0 0 32 32">
+    <path d="M14.5 4.5A11.5 11.5 0 0 0 14.5 27.5Z" fill="currentColor"/>
+    <path d="M17.5 6A10 10 0 0 1 25.16 9.572M26.563 11.774A10 10 0 0 1 26.563 20.226M25.16 22.428A10 10 0 0 1 17.5 26" fill="none" stroke="currentColor" stroke-width="3"/>
+  </symbol>
+</svg>
+
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="logo-row"><svg width="64" height="64" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div>
+  <h1>Fixed rates on<br><span class="accent">Mezo MUSD</span></h1>
+  <p class="lead">Lock the sMUSD savings rate until a set date, or sell your future yield for MUSD today.</p>
+  <div class="meta">
+    <span><b>Live app</b> tenorfi.vercel.app</span>
+    <span><b>Code</b> github.com/hackid02/tenor</span>
+    <span><b>Mezo Buildathon</b> Wave 2 · Track 1 DeFi</span>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <p class="eyebrow">The problem</p>
+  <h2>Mezo’s savings rate moves. Nobody can lock it.</h2>
+  <div class="cols" style="margin-top:12px">
+    <div class="card"><div class="big num">~5%</div><p>sMUSD rate in April 2026, per Mezo’s own launch post.</p></div>
+    <div class="card"><div class="big num">~13%</div><p>What sMUSD actually paid over the last 7 days on Mezo mainnet, read from its yield index.</p></div>
+    <div class="card"><div class="big num">1%</div><p>Mezo’s fixed MUSD borrow rate. Borrowers know their cost, but not what their MUSD will earn.</p></div>
+  </div>
+  <p class="lead" style="margin-top:44px">Savers can’t plan around a variable rate, and BTC borrowers can’t lock the spread between Mezo’s fixed loan and the savings vault.</p>
+  <div class="brand"><svg width="26" height="26" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div><div class="pg">2</div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <p class="eyebrow">The solution</p>
+  <h2>Split sMUSD into a fixed part and a variable part</h2>
+  <div class="flow">
+    <div class="node"><span class="badge b-m">M</span><div><b>MUSD</b><span>You deposit</span></div></div>
+    <div class="arrow">→</div>
+    <div class="node"><div><b>sMUSD</b><span>Mezo savings vault</span></div></div>
+    <div class="arrow">→</div>
+    <div class="outs">
+      <div class="node pt"><span class="badge b-pt">PT</span><div><b>PT · fixed</b><span>Redeems exactly 1 MUSD at maturity</span></div></div>
+      <div class="node yt"><span class="badge b-yt">YT</span><div><b>YT · variable</b><span>Receives all sMUSD yield until then</span></div></div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="card"><h3>Fix my yield</h3><p>Buy PT below 1 MUSD. The return is set the moment you buy.</p></div>
+    <div class="card"><h3>Sell future yield</h3><p>Keep the PT, sell the YT, get the yield in MUSD today.</p></div>
+    <div class="card"><h3>Trade YT</h3><p>Take the variable sMUSD rate. No liquidation; at worst it earns nothing.</p></div>
+  </div>
+  <div class="brand"><svg width="26" height="26" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div><div class="pg">3</div>
+</section>
+
+<!-- 4 -->
+<section class="slide" style="padding-bottom:104px">
+  <p class="eyebrow">The product, live on Mezo Testnet</p>
+  <h2 style="margin-bottom:28px">One transaction per action, quotes exact to the wei</h2>
+  <div class="shot"><img src="app.png" alt="Tenor app: 10.39% fixed on MUSD until Dec 31, 2026, with the Fix my yield trade card" /></div>
+  <div class="brand"><svg width="26" height="26" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div><div class="pg">4</div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <p class="eyebrow">Built on Mezo</p>
+  <h2>Every piece runs on Mezo’s own contracts</h2>
+  <table>
+    <tr><td>MUSD</td><td>Deposit, quote and yield asset</td></tr>
+    <tr><td>sMUSD (MUSDSavingsRate)</td><td>Every PT is backed 1:1 by sMUSD; YT receives its MUSD yield. Handles sMUSD’s real behaviour from its verified source.</td></tr>
+    <tr><td>Mezo Pools, concentrated liquidity</td><td>PT/MUSD pool with liquidity placed where PT trades. The router only accepts pools from Mezo’s CL factory.</td></tr>
+    <tr><td>Mezo PCV fee distribution</td><td>Mezo’s protocol fees reach Tenor’s YT holders: 41.42 MUSD claimed on-chain.</td></tr>
+    <tr><td>Mezo mainnet sMUSD</td><td>The app shows sMUSD’s real 7-day rate next to Tenor’s fixed rate.</td></tr>
+  </table>
+  <div class="brand"><svg width="26" height="26" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div><div class="pg">5</div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <p class="eyebrow">Proof, on-chain today</p>
+  <h2>Every action has run on Mezo Testnet</h2>
+  <div class="stat-row">
+    <div class="stat"><div class="v num">8</div><div class="l">contracts deployed and verified on the Mezo explorer</div></div>
+    <div class="stat"><div class="v num">10</div><div class="l">on-chain transactions in PROOF.md, one for every action</div></div>
+    <div class="stat"><div class="v num">41.42</div><div class="l">MUSD of real Mezo protocol yield claimed through YT</div></div>
+    <div class="stat"><div class="v num">22</div><div class="l">tests, including fork tests on live Mezo Testnet</div></div>
+  </div>
+  <ul class="plain">
+    <li><b>Design change mid-wave, proven both ways:</b> a Mezo stable pool moved the fixed APY from 11.8% to 2.4% after small trades. Concentrated liquidity fixed it: a 50 MUSD trade locks 11.35% against a 12.00% quote.</li>
+    <li><b>Quotes match the router to the wei</b> on 12 checked trades, for any pool liquidity.</li>
+  </ul>
+  <div class="brand"><svg width="26" height="26" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div><div class="pg">6</div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <p class="eyebrow">Business model</p>
+  <h2>Revenue from yield, and a reason to borrow more MUSD</h2>
+  <div class="cols">
+    <div class="card"><h3>Protocol fee</h3><p>5% of the sMUSD yield paid to YT, plus any yield after maturity, goes to the treasury. Enforced in the contract.</p></div>
+    <div class="card"><h3>Fixed carry</h3><p>Borrow MUSD on Mezo at a fixed 1%, put it in PT, and the spread is fixed until maturity. More reason to mint MUSD.</p></div>
+    <div class="card"><h3>Liquidity</h3><p>LPs earn the PT pool’s swap fees on Mezo Pools. PT converges to 1 MUSD, so the range is narrow and predictable.</p></div>
+  </div>
+  <div class="brand"><svg width="26" height="26" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div><div class="pg">7</div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <p class="eyebrow">Status and next steps</p>
+  <h2>Where Tenor is, honestly</h2>
+  <ul class="plain">
+    <li><b>Today:</b> live on Mezo Testnet, contracts verified, every action proven on-chain. Not audited. Pool liquidity is seeded by the team.</li>
+    <li><b>Next (by end of December 2026):</b> capped mainnet markets on Mezo sMUSD with one- and three-month maturities; outside LPs for the PT pools.</li>
+    <li><b>Then (Q1 2027):</b> borrow MUSD against BTC and fix the sMUSD rate in one transaction.</li>
+    <li><b>Then (Q1–Q2 2027):</b> PT as collateral on Mezo’s lending markets.</li>
+  </ul>
+  <div class="meta" style="margin-top:48px">
+    <span><b>App</b> tenorfi.vercel.app</span>
+    <span><b>Code and proof</b> github.com/hackid02/tenor</span>
+  </div>
+  <div class="brand"><svg width="26" height="26" style="color:#0b7a62"><use href="#mark"/></svg>Tenor</div><div class="pg">8</div>
+</section>
+
+</body>
+</html>

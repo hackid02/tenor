@@ -113,6 +113,17 @@ async function main() {
       market.redeemPair(E(10), me.address));
   }
 
+  if (only === "distribute") {
+    // Mezo's PCV holds MUSD protocol fees until someone calls distributeMUSD()
+    // (permissionless, "bot-friendly" in Mezo's source). Half goes to all sMUSD
+    // holders, including Tenor's market, i.e. to YT holders.
+    const pcvAddr = "0x4dDD70f4C603b6089c07875Be02fEdFD626b80Af";
+    const pcv = new ethers.Contract(pcvAddr, ["function distributeMUSD()"], me);
+    const bal = await musd.balanceOf(pcvAddr);
+    await record("distribute", `Mezo PCV distributes ${F(bal)} MUSD of protocol fees (half to sMUSD holders)`, pcv.distributeMUSD());
+    console.log(`  Tenor market pending yield now: ${F(await market.pendingSmusdYield())} MUSD`);
+  }
+
   if (run("claimYield")) {
     const preview = await market.previewYield(me.address);
     await record("claimYield", `Claim real sMUSD yield earned by YT: ${F(preview)} MUSD`,

@@ -71,6 +71,23 @@
       "block": 16675004,
       "time": "2026-11-09T15:18:48.208Z",
       "yieldMusd": "0.0000"
+    },
+    {
+      "action": "distribute",
+      "what": "Mezo PCV distributes 64195.1427 MUSD of protocol fees (half to sMUSD holders)",
+      "tx": "0xa3706e86d9466a9298596ef76e7cc7314b54b2f7cd409ba9acdca61d0e9c2c5e",
+      "link": "https://explorer.test.mezo.org/tx/0xa3706e86d9466a9298596ef76e7cc7314b54b2f7cd409ba9acdca61d0e9c2c5e",
+      "block": 16694600,
+      "time": "2026-11-10T14:17:32.272Z"
+    },
+    {
+      "action": "claimYield",
+      "what": "Claim real sMUSD yield earned by YT: 41.4184 MUSD",
+      "tx": "0x806c5b89a4e75f7878040496c6579eba42905b045e052f95922593701ca819ca",
+      "link": "https://explorer.test.mezo.org/tx/0x806c5b89a4e75f7878040496c6579eba42905b045e052f95922593701ca819ca",
+      "block": 16694614,
+      "time": "2026-11-10T14:18:27.437Z",
+      "yieldMusd": "41.4184"
     }
   ]
 }

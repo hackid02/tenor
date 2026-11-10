@@ -39,6 +39,8 @@ Everything below is live on **Mezo Testnet** (chain 31611) and can be checked on
 | 6 | `deposit` | Split: 20 MUSD -> 20 PT + 20 YT (into real sMUSD) | [0x89240bb6…](https://explorer.test.mezo.org/tx/0x89240bb65ec59e68809f5f3a832b41f07801a8a4d126f65978f6d720ca342866) |
 | 7 | `redeemPair` | Merge: 10 PT + 10 YT -> 10 MUSD before maturity | [0xe133cb02…](https://explorer.test.mezo.org/tx/0xe133cb021b482f0011b7a093ba753ff1f7326966d55e3dbfeb4b8d9231b09246) |
 | 8 | `claimYield` | Claim real sMUSD yield earned by YT: 0.0000 MUSD | [0x94b25db8…](https://explorer.test.mezo.org/tx/0x94b25db880386baf1068fba29f76af3d27231efbd58a2dd479ca99e3185b78d8) |
+| 9 | `distribute` | Mezo PCV distributes 64195.1427 MUSD of protocol fees (half to sMUSD holders) | [0xa3706e86…](https://explorer.test.mezo.org/tx/0xa3706e86d9466a9298596ef76e7cc7314b54b2f7cd409ba9acdca61d0e9c2c5e) |
+| 10 | `claimYield` | Claim real sMUSD yield earned by YT: 41.4184 MUSD | [0x806c5b89…](https://explorer.test.mezo.org/tx/0x806c5b89a4e75f7878040496c6579eba42905b045e052f95922593701ca819ca) |
 
 ## Design note: why CL pools
 
