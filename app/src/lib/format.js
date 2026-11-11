@@ -6,6 +6,7 @@ export function cleanAmount(raw) {
   const dot = s.indexOf(".");
   if (dot !== -1) s = s.slice(0, dot + 1) + s.slice(dot + 1).replace(/\./g, "").slice(0, 18);
   if (s.startsWith(".")) s = "0" + s;
+  s = s.replace(/^0+(?=\d)/, ""); // "00012" -> "12", "0.5" stays
   return s.slice(0, 30);
 }
 

@@ -63,7 +63,10 @@ export function useQuote(t, kind, input) {
         }
         case "buyYT": {
           const r = await call("quoteSellPT", wei, down);
-          return { ok: r.filled, cost: Math.max(0, a - n(r.amountOut)), max: n(r.amountIn) };
+          // PT selling for 1 MUSD or more would make YT cost nothing or less:
+          // the router cannot settle that trade, so it is not offered.
+          const noYT = flat || (r.filled && n(r.amountOut) >= a);
+          return { ok: r.filled && !noYT, noYT, cost: Math.max(0, a - n(r.amountOut)), max: n(r.amountIn) };
         }
         case "sellYT": {
           const r = await call("quoteExactPT", wei, up);

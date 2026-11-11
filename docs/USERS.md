@@ -1,11 +1,11 @@
 # Who has used Tenor
 
-Read from Mezo Testnet at block 16714619 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
+Read from Mezo Testnet at block 16715258 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
 
 | | Wallets | Transactions |
 |---|---|---|
 | **Outside wallets** (not on the team or QA list) | **1** | **1** |
-| Team and Team QA wallets ([docs/QA.md](QA.md)) | 11 | 34 |
+| Team and Team QA wallets ([docs/QA.md](QA.md)) | 12 | 39 |
 
 ## Outside wallets
 
@@ -28,3 +28,4 @@ Read from Mezo Testnet at block 16714619 by `node scripts/users.js`. Every walle
 | `0xAa1B7e7dabF539ABf0298816E3904Da42e031adb` | Team QA · Dami | Fix yield, Sell PT |
 | `0x7Eff3D57f8Ae05f4a9706E1aC71c043C428B7F9b` | Team QA · Efe | Split, Merge |
 | `0x66F18163D75E2848cE41fFDFF0e7455b46475A00` | Team QA · Gina | Fix yield, Sell PT |
+| `0x73D34E243BE04aDc3f9CAe5d86B35530a45d05Ac` | Team QA · Hana | Fix yield, Sell future yield, Buy YT, Sell YT, Sell PT |

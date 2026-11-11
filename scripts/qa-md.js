@@ -47,6 +47,13 @@ L.push("| Same trade | PT above 1 MUSD near maturity showed a negative fixed APY
 L.push("| Persona QA (Dami) | A sell ran out of gas: one RPC node estimated half the gas actually needed | Gas floor of 1,000,000 for trades (100,000 for approvals); costs fractions of a cent |");
 L.push("| Website QA (Gina) | \"Approve PT\" stayed disabled until an unrelated sell price loaded | Approving no longer waits for a price |");
 L.push("| Live site, day 2 | Activity feed failed once markets passed 10,000 blocks (RPC log-range limit) | Read history in 9,000-block windows, then only new blocks |");
+L.push("| Final website check (Hana) | On a market where PT trades above 1 MUSD, Buy YT showed a cost of 0 and a negative break-even, and the router would revert | Buy YT is blocked with a plain explanation when PT is at or above 1 MUSD |");
+L.push("| Final website check (Hana) | Dust amounts (0.0000001 MUSD) could be submitted, and leading zeros stayed in the field | Minimum trade 0.01; leading zeros removed |");
+L.push("| Rate history on the demo market | A PT price above 1 MUSD drew a fixed APY of -13.44% | Shown as \"none\", matching the headline |");
+L.push("");
+L.push("## Final website check (Nov 11)");
+L.push("");
+L.push("A fresh Team QA wallet (Hana) ran every flow through the real UI on localhost against Mezo Testnet: connect, approve MUSD, Fix my yield (3 MUSD), Sell future yield (2 MUSD), Buy YT and Sell YT (2 YT), approve PT and Sell PT early. **All passed**; 10 MUSD in, 9.9986 MUSD out after the round trip. Amount field edge cases (empty, 0, letters, negative, too large for the pool, over balance) and the demo market were also checked; the bugs found are in the table above. The full test suite passed (29 of 29, fork tests on a copy of Mezo Testnet), the production build runs with its security headers without console errors, and every link in the docs and app resolves.");
 L.push("");
 L.push("## Team QA wallets");
 L.push("");

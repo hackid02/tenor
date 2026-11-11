@@ -55,11 +55,18 @@ export function TradeCard({ t, tx }) {
  * Shared checks: returns [amountNumber, fieldError, blocker].
  * `quote` comes from useQuote: exact, from the on-chain quoter.
  */
+const MIN_TRADE = 0.01;
+
 function check(input, balance, unit, quote) {
   const wei = toWei(input);
   const a = wei ? Number(input) : 0;
   if (!wei) return [0, null, "Enter an amount"];
+  // Below this, gas and rounding outweigh the trade itself.
+  if (a < MIN_TRADE) return [a, `The smallest trade is ${MIN_TRADE} ${unit}.`, `Minimum ${MIN_TRADE} ${unit}`];
   if (quote.error) return [a, null, "Can’t get a price right now"];
+  if (quote.data && quote.data.noYT) {
+    return [a, "PT costs 1 MUSD or more right now, so YT can’t be bought through the pool at this price.", "YT not available at this price"];
+  }
   if (quote.data && quote.data.noGain) {
     return [a, "PT costs 1 MUSD or more right now, so there is no fixed yield to lock or sell. It redeems for 1 MUSD at maturity.", "No fixed yield at this price"];
   }
@@ -215,7 +222,7 @@ function YtForm({ t, tx }) {
           <>
             <Row k="Cost" v={qb?.ok ? `${amount(qb.cost, 4)} MUSD` : dash} strong />
             <Row k="You earn" v={`sMUSD yield on ${amount(a, 0)} MUSD`} />
-            <Row k="Profitable if sMUSD averages above" v={percent(t.apy)} />
+            <Row k="Profitable if sMUSD averages above" v={t.apy > 0 ? percent(t.apy) : "–"} />
           </>
         ) : (
           <Row k="You get" v={qs?.ok ? `${amount(qs.out, 4)} MUSD` : dash} strong />
