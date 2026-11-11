@@ -35,6 +35,18 @@
   .stat .v { font-size: 120px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
   .stat .l { font-size: 30px; color: var(--ink-2); margin-top: 12px; line-height: 1.3; }
   .pill-label { position: absolute; padding: 10px 18px; border-radius: 12px; background: var(--surface); border: 2px solid var(--line-strong); font-size: 26px; font-weight: 600; white-space: nowrap; }
+  .wsheet { position: absolute; width: 420px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 28px 70px rgba(21,23,26,0.22); padding: 22px 24px 24px; font-size: 19px; z-index: 40; }
+  .wsheet .top { display: flex; justify-content: space-between; align-items: center; color: var(--ink-2); font-size: 16px; font-weight: 600; }
+  .wsheet .net { padding: 4px 10px; border-radius: 999px; background: var(--sunken); border: 1px solid var(--line); font-weight: 500; }
+  .wsheet h3 { margin: 18px 0 2px; font-size: 26px; font-weight: 600; }
+  .wsheet .site { color: var(--ink-2); font-size: 16px; margin-bottom: 14px; }
+  .wsheet .r { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+  .wsheet .r span:first-child { color: var(--ink-2); }
+  .wsheet .r span:last-child { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+  .wsheet .btns { display: flex; gap: 12px; margin-top: 18px; }
+  .wsheet .btns div { flex: 1; text-align: center; padding: 13px 0; border-radius: 12px; font-weight: 600; }
+  .wsheet .rej { border: 1px solid var(--line-strong); color: var(--ink); }
+  .wsheet .ok { background: var(--ink); color: #fff; }
   #captions { position: absolute; left: 0; right: 0; bottom: 40px; display: flex; justify-content: center; pointer-events: none; }
   #cap { max-width: 1500px; padding: 14px 28px; border-radius: 16px; background: rgba(255,255,255,0.94); border: 1px solid var(--line); font-size: 38px; font-weight: 500; line-height: 1.3; text-align: center; letter-spacing: 0.002em; }
   #cap .w { color: var(--ink); }
@@ -275,6 +287,18 @@ const CK = 1.2, CX = 1060, CY = 64;
   const R = (y, h = 29) => hl(L, CX + 14 * CK, CY + y * CK, 392 * CK, h * CK);
   const hGet = R(170), hWorth = R(199), hDone = hl(L, CX + 18 * CK, CY + 563 * CK, 384 * CK, 65 * CK);
   const hNow = R(170), hKeep = R(199);
+  // The wallet step. A neutral sheet in the film's own style (no wallet brand),
+  // filled with the real transaction: github PROOF / explorer tx 0x0194…08ce.
+  const sheet = el(L, "wsheet", `
+    <div class="top"><span>Wallet</span><span class="net">Mezo Testnet</span></div>
+    <h3>Confirm transaction</h3>
+    <div class="site">tenorfi.vercel.app</div>
+    <div class="r"><span>Contract</span><span>TenorRouter ✓ <span class="mono" style="font-weight:400;color:var(--ink-2)">0xf33C…2169</span></span></div>
+    <div class="r"><span>Action</span><span class="mono">buyPT</span></div>
+    <div class="r"><span>You pay</span><span>10 MUSD</span></div>
+    <div class="r"><span>You receive</span><span>10.0864 PT</span></div>
+    <div class="r"><span>Network fee</span><span>&lt; $0.01</span></div>
+    <div class="btns"><div class="rej">Reject</div><div class="ok">Confirm</div></div>`, { left: "1420px", top: "150px" });
   window.FIX = { cards };
   S.fix = (t) => {
     // L-fix carries two scenes, fix and sell, as one continuous card; the
@@ -288,19 +312,23 @@ const CK = 1.2, CX = 1060, CY = 64;
     const tEnter = W("fix", "enter"), tAmt = W("fix", "amount"), tPT = W("fix", "pt"), tWorth = W("fix", "worth");
     const tClick = W("fix2", "click"), tTx = W("fix2", "transaction"), tLock = W("fix2", "locked");
     const tSell = SCN.sell[0], tToday = W("sell", "today"), tKeep = W("sell", "keep");
+    const tConfirm = tTx + 0.2, tDone = tConfirm + 1.05;
     let state = "empty";
     if (t >= tAmt) state = "ready";
     if (t >= tClick + 0.12) state = "pending";
-    if (t >= tTx + 0.6) state = "done";
+    if (t >= tDone) state = "done";
+    // Wallet sheet: in after the click, out after Confirm.
+    const sIn = UI(t - tClick - 0.15), sOut = ramp(t, tConfirm + 0.12, tConfirm + 0.4);
+    set(sheet, { x: (1 - sIn) * 60 + sOut * 40, o: Math.min(appear(t, tClick + 0.15, 0.15), 1 - sOut), s: 0.97 + 0.03 * sIn });
     if (t >= tSell + 0.55) state = "sell";
     for (const [k, c] of Object.entries(cards)) {
       const on = k === state;
-      const since = { empty: a, ready: tAmt, pending: tClick + 0.12, done: tTx + 0.6, sell: tSell + 0.55 }[k];
+      const since = { empty: a, ready: tAmt, pending: tClick + 0.12, done: tDone, sell: tSell + 0.55 }[k];
       set(c, { o: on ? 1 : 0, y: on && k === "sell" ? (1 - UI(t - since)) * 18 : 0, s: on && k === "done" ? 1 + 0.012 * Math.sin(Math.PI * clamp((t - since) / 0.3)) : 1 });
     }
     // Copy on the left follows the voice.
     const copy = t < tClick - 0.3 ? ["Fix my yield", "Lock a fixed return", "Enter an amount. Tenor quotes the PT you get and its value on Dec 31, 2026."]
-      : t < tSell + 0.3 ? ["Fix my yield", "One click, one transaction", "The return is locked the moment you buy."]
+      : t < tSell + 0.3 ? ["Fix my yield", "One click, one transaction", "Confirm once in your wallet. The return is locked the moment you buy."]
       : ["Sell future yield", "Get your yield in MUSD today", "Keep the deposit as PT. Sell the YT. It redeems in full on Dec 31."];
     if (eb.textContent !== copy[0]) eb.textContent = copy[0];
     if (h1.textContent !== copy[1]) h1.textContent = copy[1];
@@ -311,7 +339,7 @@ const CK = 1.2, CX = 1060, CY = 64;
     sub.style.top = 350 + h1.offsetHeight + 28 + "px"; // always below the headline, one line or two
     set(sub, { y: (1 - TYPE(t - since - 0.12)) * 30, o: appear(t, since + 0.12) });
     set(hGet, { o: appear(t, tPT) * (1 - appear(t, tWorth)) * (state === "ready" ? 1 : 0) });
-    set(hWorth, { o: appear(t, tWorth) * (state === "ready" ? 1 : 0) });
+    set(hWorth, { o: appear(t, tWorth) * (1 - appear(t, tClick - 0.8)) * (state === "ready" ? 1 : 0) });
     set(hDone, { o: appear(t, tLock - 0.2) * (state === "done" ? 1 : 0) });
     set(hNow, { o: appear(t, tToday - 0.2) * (state === "sell" ? 1 : 0) * (1 - appear(t, tKeep - 0.1) * (tKeep < tToday ? 1 : 0)) });
     set(hKeep, { o: appear(t, tKeep) * (1 - appear(t, tToday - 0.2)) * (state === "sell" ? 1 : 0) });
@@ -319,11 +347,12 @@ const CK = 1.2, CX = 1060, CY = 64;
     const B = SH["fix-approved"];
     const P = (bx, by) => [CX + bx * CK, CY + by * CK];
     const pIn = P(B.input.x + 90, B.input.y + 18), pBtn = P(B.button.x + 230, B.button.y + 28), pTab = P(170, 36), pOff = [1980, 900];
-    const keys = [[a, pOff], [tEnter - 0.6, pIn], [tClick - 0.7, pBtn], [tSell - 0.2, pTab], [tSell + 1.2, [1500, 1130]]];
+    const sb = sheet.querySelector(".ok"), pOk = [1420 + sb.offsetLeft + sb.offsetWidth / 2, 150 + sb.offsetTop + sb.offsetHeight / 2];
+    const keys = [[a, pOff], [tEnter - 0.6, pIn], [tClick - 0.7, pBtn], [tClick + 0.3, pOk], [tConfirm + 0.5, pBtn], [tSell - 0.2, pTab], [tSell + 1.2, [1500, 1130]]];
     const cx = track(t, keys.map(([k, p]) => [k, p[0]]), PANEL), cy = track(t, keys.map(([k, p]) => [k, p[1]]), PANEL);
-    cursorAt(cx, cy, [tEnter - 0.05, tClick, tSell + 0.4], t);
+    cursorAt(cx, cy, [tEnter - 0.05, tClick, tConfirm, tSell + 0.4], t);
   };
-  CUES.push({ t: W("fix", "enter") - 0.05, type: "click" }, { t: W("fix2", "click"), type: "click" }, { t: SCN.sell[0] + 0.4, type: "click" });
+  CUES.push({ t: W("fix", "enter") - 0.05, type: "click" }, { t: W("fix2", "click"), type: "click" }, { t: W("fix2", "transaction") + 0.2, type: "click" }, { t: SCN.sell[0] + 0.4, type: "click" });
 }
 function cursorAt(x, y, clicks, t) {
   const c = $("cursor"), r = $("ripple");
@@ -458,7 +487,9 @@ function cursorAt(x, y, clicks, t) {
   const name = el(L, "abs", "Tenor", { left: "400px", top: "335px", fontSize: "170px", fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1 });
   const tag = el(L, "abs", "Fixed rates for MUSD", { left: "406px", top: "530px", fontSize: "60px", color: "var(--ink-2)" });
   const url = el(L, "abs mono", "tenorfi.vercel.app", { left: "408px", top: "640px", fontSize: "38px", color: "var(--accent)" });
-  const built = el(L, "abs", "Built on Mezo · sMUSD · Mezo Pools · Mezo Buildathon", { left: "408px", top: "710px", fontSize: "28px", color: "var(--ink-2)" });
+  const rule = el(L, "abs", "", { left: "408px", top: "722px", width: "640px", height: "1px", background: "var(--line-strong)", transformOrigin: "0 0" });
+  const built = el(L, "abs", "Built for the Mezo Buildathon · Wave 2", { left: "408px", top: "748px", fontSize: "30px", fontWeight: 600 });
+  const stack = el(L, "abs", "On Mezo Testnet · MUSD · sMUSD · Mezo Pools", { left: "408px", top: "794px", fontSize: "26px", color: "var(--ink-2)" });
   S.close = (t) => {
     const u = scene("close", t); if (u == null) return;
     const sv = mark.querySelector(".lg-solid");
@@ -467,7 +498,9 @@ function cursorAt(x, y, clicks, t) {
     set(name, { x: (1 - TYPE(u - 0.1)) * 50, o: appear(u, 0.1) });
     set(tag, { y: (1 - TYPE(u - 0.35)) * 30, o: appear(u, 0.35) });
     set(url, { y: (1 - TYPE(u - 0.6)) * 30, o: appear(u, 0.6) });
-    set(built, { o: appear(u, 0.9, 0.4) });
+    rule.style.transform = `scaleX(${PANEL(u - 0.85)})`;
+    set(built, { y: (1 - TYPE(u - 1.0)) * 20, o: appear(u, 1.0) });
+    set(stack, { y: (1 - TYPE(u - 1.15)) * 20, o: appear(u, 1.15) });
   };
 }
 
