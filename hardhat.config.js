@@ -20,7 +20,7 @@ module.exports = {
   },
   networks: {
     hardhat: fork
-      ? { chainId: 31337, forking: { url: RPC[fork] } }
+      ? { chainId: 31337, forking: { url: RPC[fork], ...(process.env.FORK_BLOCK && { blockNumber: Number(process.env.FORK_BLOCK) }) } }
       : {},
     // Gas used varies block to block (pool price observations, Mezo fee
     // distribution inside sMUSD.deposit). Gas is cheap, so pad estimates 2x.

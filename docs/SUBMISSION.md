@@ -47,13 +47,15 @@ Tenor splits Mezo's sMUSD savings position into a fixed part (PT) and a variable
 MUSD holders who want a predictable return, BTC holders who borrow MUSD on Mezo and want a fixed spread, and DeFi users who want to trade the sMUSD rate (YT) without liquidation risk. Crypto-native users on desktop and mobile web.
 
 **Tech stack:**
-Solidity 0.8.24, OpenZeppelin, Hardhat (unit tests plus fork tests against live Mezo Testnet), Mezo sMUSD and Mezo Pools (Slipstream CL), React + Vite, wagmi + viem, Vercel. 22 tests, all passing.
+Solidity 0.8.24, OpenZeppelin, Hardhat (unit tests plus fork tests against live Mezo Testnet), Mezo sMUSD and Mezo Pools (Slipstream CL), React + Vite, wagmi + viem, Vercel. 29 tests, all passing, including fork tests that check every quote against the router to the wei.
 
 **What was built in this Wave:**
 Everything (new project):
 - `TenorMarket` (PT/YT split over sMUSD, yield accounting, maturity), `TenorRouter` (one-transaction buy/sell PT, buy/sell YT, cash out yield, through Mezo CL pools)
 - deployment of two markets with seeded CL pools; every action run on-chain with explorer links
 - the web app with live on-chain data (fixed rate, sMUSD's real 7-day rate, rate history, activity feed)
+- `TenorQuoter` (exact on-chain quotes) and Team QA: 7 persona wallets, 23/23 on-chain checks and 10/10 website checks, 5 bugs found and fixed (https://github.com/hackid02/tenor/blob/main/docs/QA.md)
+- outside testers trading on the live app, counted from the chain and listed apart from team wallets (https://github.com/hackid02/tenor/blob/main/docs/USERS.md)
 - a design change mid-wave: a Mezo stable pool moved the fixed APY from 11.8% to 2.4% after small trades, so Tenor moved to concentrated liquidity (the same 50 MUSD trade now locks 11.35% against a 12.00% quote). Both sets of transactions are in the proof.
 
 **Future milestones:**
@@ -78,6 +80,6 @@ Record your screen at tenorfi.vercel.app with a wallet connected. Speak plainly.
 | 0:55–1:15 | Sell future yield tab: type 50, click, confirm | "Or the opposite: keep my deposit as PT, sell the future yield, and get MUSD today." |
 | 1:15–1:30 | Live activity shows your trade; click it to open the Mezo explorer | "Every action is on-chain on Mezo, in one transaction, through Mezo's concentrated-liquidity pools." |
 | 1:30–1:45 | Fixed carry card | "And for BTC borrowers: Mezo lends MUSD at a fixed 1%. Put it in PT and the whole spread is fixed." |
-| 1:45–1:55 | GitHub README and PROOF.md | "Contracts verified, 22 tests, and every action proven on-chain. That's Tenor: fixed rates for MUSD." |
+| 1:45–1:55 | GitHub README and PROOF.md | "Contracts verified, 29 tests, and every action proven on-chain. That's Tenor: fixed rates for MUSD." |
 
 Checks before uploading: under 2:00, sound clear, wallet balances visible, no private keys or seed phrases on screen.

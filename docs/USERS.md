@@ -1,15 +1,17 @@
 # Who has used Tenor
 
-Read from Mezo Testnet at block 16714043 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
+Read from Mezo Testnet at block 16714619 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
 
 | | Wallets | Transactions |
 |---|---|---|
-| **Outside wallets** (not created or funded by the team) | **0** | **0** |
+| **Outside wallets** (not on the team or QA list) | **1** | **1** |
 | Team and Team QA wallets ([docs/QA.md](QA.md)) | 11 | 34 |
 
 ## Outside wallets
 
-None yet.
+| Wallet | What they did | First transaction |
+|---|---|---|
+| [`0x9bFD7dec27547FC7b499158422656703439e5Ae8`](https://explorer.test.mezo.org/address/0x9bFD7dec27547FC7b499158422656703439e5Ae8) | Fix yield | [0x638d388b…](https://explorer.test.mezo.org/tx/0x638d388b8c87a6178445983e6ff74762375c32fdfc00a7ebebf84202750d6bfe) |
 
 ## Team wallets
 

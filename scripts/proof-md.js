@@ -48,6 +48,19 @@ proof.steps.forEach((s, i) => {
   lines.push(`| ${i + 1} | \`${s.action}\` | ${s.what} | [${s.tx.slice(0, 10)}…](${s.link}) |`);
 });
 lines.push("");
+// Usage beyond the team's own proof run, from `node scripts/users.js`.
+const usersPath = path.join(root, "docs", "USERS.md");
+if (fs.existsSync(usersPath)) {
+  const u = fs.readFileSync(usersPath, "utf8");
+  const num = (re) => (u.match(re) || [])[1];
+  const outW = num(/\*\*Outside wallets\*\*[^|]*\| \*\*(\d+)\*\*/);
+  const outT = num(/\*\*Outside wallets\*\*[^|]*\| \*\*\d+\*\* \| \*\*(\d+)\*\*/);
+  const teamW = num(/Team and Team QA wallets[^|]*\| (\d+)/);
+  lines.push("## Who else has used it");
+  lines.push("");
+  lines.push(`Read from the chain by \`node scripts/users.js\`: **${outW} outside wallet${outW === "1" ? "" : "s"}** (${outT} transaction${outT === "1" ? "" : "s"}) and ${teamW} team and Team QA wallets. Every wallet is listed in [docs/USERS.md](docs/USERS.md); the QA runs are in [docs/QA.md](docs/QA.md).`);
+  lines.push("");
+}
 lines.push("## Design note: why CL pools");
 lines.push("");
 lines.push("Tenor first used a Mezo **stable** pool for PT/MUSD. Stable pools concentrate liquidity at a price of exactly 1, but PT trades below 1 (about 0.984 for 12% APY), so a few small trades moved the fixed APY from 11.8% to 2.4%. Those first transactions are kept in [`proof/31611-stable-pool-v1.json`](proof/31611-stable-pool-v1.json).");

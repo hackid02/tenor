@@ -53,16 +53,20 @@ export function RateCompare({ fixed, variable, loading, maturity }) {
   const max = Math.max(fixed ?? 0, variable ?? 0, 0.0001);
   const w = (v) => `${Math.max(2, (Math.max(0, v ?? 0) / max) * 100)}%`;
   let verdict = null;
+  let read = null; // who each side suits, at these rates
   if (fixed != null && fixed <= 0) {
     verdict = "PT trades at or above 1 MUSD right now, so there is no fixed yield to lock on this maturity.";
   } else if (fixed != null && variable != null) {
     const d = fixed - variable;
-    verdict =
-      Math.abs(d) < 0.0025
-        ? "The fixed rate is about the same as what sMUSD paid last week."
-        : d > 0
-          ? `Fixing pays ${percent(d)} more than sMUSD paid last week.`
-          : `Fixing pays ${percent(-d)} less than sMUSD paid last week: that is the price of certainty until ${date(maturity)}.`;
+    if (Math.abs(d) < 0.0025) {
+      verdict = "The fixed rate is about the same as what sMUSD paid last week.";
+    } else if (d > 0) {
+      verdict = `Fixing pays ${percent(d)} more than sMUSD paid last week.`;
+      read = `The market expects sMUSD to pay more than last week until ${date(maturity)}. If you think it will pay less, fixing is the better side. If you think it will pay more, buy YT.`;
+    } else {
+      verdict = `Fixing pays ${percent(-d)} less than sMUSD paid last week.`;
+      read = `The market expects sMUSD to average about ${percent(fixed)} until ${date(maturity)}, below last week's rate. Fix if you want a known return whatever happens. If you think sMUSD will stay near ${percent(variable)}, buy YT: you get every MUSD it pays.`;
+    }
   }
   return (
     <div className="compare" aria-label="Fixed rate compared with sMUSD's recent variable rate">
@@ -80,7 +84,12 @@ export function RateCompare({ fixed, variable, loading, maturity }) {
         </div>
         <div className="cmp-track"><div className="cmp-bar variable" style={{ width: loading ? "0%" : w(variable) }} /></div>
       </div>
-      {verdict && <p className="note">{verdict}</p>}
+      {verdict && (
+        <p className="note">
+          {verdict}
+          {read && <span className="note-read"> {read}</span>}
+        </p>
+      )}
     </div>
   );
 }

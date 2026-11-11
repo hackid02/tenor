@@ -90,7 +90,7 @@ npm test                # unit tests, mock sMUSD with Mezo's exact yield logic
 npm run test:fork       # also runs against a live copy of Mezo Testnet: real sMUSD, real Mezo CL pools
 ```
 
-22 tests: yield distribution and fees, transfer checkpoints, late depositors, auto-paid yield on withdraw, maturity, a full solvency lifecycle, and every router path (buy and sell PT, cash out yield, buy and sell YT, slippage limits, pool validation, callback protection) on a fork of Mezo Testnet.
+29 tests: yield distribution and fees, transfer checkpoints, late depositors, auto-paid yield on withdraw, maturity, a full solvency lifecycle, every router path (buy and sell PT, cash out yield, buy and sell YT, slippage limits, pool validation, callback protection) and the quoter (every quote equals what the router then does, to the wei; partial fills reported; quotes never move funds) on a fork of Mezo Testnet. Set `FORK_BLOCK` to pin the fork to one block, which makes repeat runs much faster.
 
 ## Run it yourself
 

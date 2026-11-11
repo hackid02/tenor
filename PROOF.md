@@ -42,6 +42,10 @@ Everything below is live on **Mezo Testnet** (chain 31611) and can be checked on
 | 9 | `distribute` | Mezo PCV distributes 64195.1427 MUSD of protocol fees (half to sMUSD holders) | [0xa3706e86…](https://explorer.test.mezo.org/tx/0xa3706e86d9466a9298596ef76e7cc7314b54b2f7cd409ba9acdca61d0e9c2c5e) |
 | 10 | `claimYield` | Claim real sMUSD yield earned by YT: 41.4184 MUSD | [0x806c5b89…](https://explorer.test.mezo.org/tx/0x806c5b89a4e75f7878040496c6579eba42905b045e052f95922593701ca819ca) |
 
+## Who else has used it
+
+Read from the chain by `node scripts/users.js`: **1 outside wallet** (1 transaction) and 11 team and Team QA wallets. Every wallet is listed in [docs/USERS.md](docs/USERS.md); the QA runs are in [docs/QA.md](docs/QA.md).
+
 ## Design note: why CL pools
 
 Tenor first used a Mezo **stable** pool for PT/MUSD. Stable pools concentrate liquidity at a price of exactly 1, but PT trades below 1 (about 0.984 for 12% APY), so a few small trades moved the fixed APY from 11.8% to 2.4%. Those first transactions are kept in [`proof/31611-stable-pool-v1.json`](proof/31611-stable-pool-v1.json).
