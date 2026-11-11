@@ -466,3 +466,5 @@ button { font: inherit; color: inherit; }
 .crash p { color: var(--ink-2); margin: 0 0 20px; }
 
 .apy.apy-none { font-size: clamp(32px, 5vw, 48px); color: var(--ink-2); }
+
+.team-tag { display: inline-block; padding: 0 6px; border-radius: 5px; background: var(--sunken); color: var(--ink-2); font-weight: 600; }

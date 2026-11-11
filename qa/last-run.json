@@ -1,0 +1,167 @@
+{
+  "time": "2026-11-11T12:36:47.508Z",
+  "network": "Mezo Testnet",
+  "results": [
+    {
+      "persona": "Ada",
+      "check": "Fix my yield: 50 MUSD gets the quoted PT",
+      "pass": true,
+      "detail": "quoted 50.5027 PT, got 50.5027 PT, 7.66% fixed",
+      "tx": "https://explorer.test.mezo.org/tx/0x01287a82a32f8264ab9085124513242e6f17362c994e28f4eaef8d688400ba8d"
+    },
+    {
+      "persona": "Ada",
+      "check": "Holding PT, no MUSD stuck in router",
+      "pass": true,
+      "detail": "router MUSD balance 0",
+      "tx": null
+    },
+    {
+      "persona": "Bayo",
+      "check": "Sell future yield on 100 MUSD: keeps 100 PT",
+      "pass": true,
+      "detail": "PT 100.00",
+      "tx": "https://explorer.test.mezo.org/tx/0x73d7269f4508d96249885fe52e5ae220467812183bcb2d9f2fb694d82dc6aab1"
+    },
+    {
+      "persona": "Bayo",
+      "check": "Gets about the quoted MUSD up front",
+      "pass": true,
+      "detail": "quoted 0.9087, got 0.9087 MUSD",
+      "tx": null
+    },
+    {
+      "persona": "Bayo",
+      "check": "Has no YT left (yield sold)",
+      "pass": true,
+      "detail": "YT 0",
+      "tx": null
+    },
+    {
+      "persona": "Chidi",
+      "check": "Buy 30 YT for about the quoted cost",
+      "pass": true,
+      "detail": "quoted 0.2664, paid 0.2664 MUSD for 30 YT",
+      "tx": "https://explorer.test.mezo.org/tx/0xf47b18103b12a9ffd701a5ae45e18f78a79cb632f11814ee469bb818b2185c98"
+    },
+    {
+      "persona": "Chidi",
+      "check": "Claim yield works with nothing accrued yet",
+      "pass": true,
+      "detail": "claimed 0, no revert",
+      "tx": "https://explorer.test.mezo.org/tx/0xc25e0a3a45acc2481fc03d71fd10391ca33aae67d6726ab030b1cb61ec5b8855"
+    },
+    {
+      "persona": "Chidi",
+      "check": "Sell 10 YT back for about the quoted MUSD",
+      "pass": true,
+      "detail": "quoted 0.0880, got 0.0880 MUSD, 20 YT left",
+      "tx": "https://explorer.test.mezo.org/tx/0xeaee6bbf13c72721f6c0dbb8eebf3a361b272d75a40e9422477274c357fbd211"
+    },
+    {
+      "persona": "Dami",
+      "check": "Buy 30 MUSD of PT, then sell it all straight back",
+      "pass": true,
+      "detail": "got back 29.9940 of 30 MUSD (round-trip cost 0.01%)",
+      "tx": "https://explorer.test.mezo.org/tx/0x55d483002b369dd6d5f5907830f2d8f167d02dc5d4664161d58c6c69033b5e6a"
+    },
+    {
+      "persona": "Dami",
+      "check": "Round trip costs under 0.5% (fees and price impact)",
+      "pass": true,
+      "detail": "0.01%",
+      "tx": null
+    },
+    {
+      "persona": "Efe",
+      "check": "Split 20 MUSD into 20 PT + 20 YT",
+      "pass": true,
+      "detail": "20 PT + 20 YT",
+      "tx": "https://explorer.test.mezo.org/tx/0xad7f63d1390d55b1a48f6bc19e2a912dfc67d52c7e0c9b6b594fb07b2f545bb9"
+    },
+    {
+      "persona": "Efe",
+      "check": "Send 5 YT to Ada (yield checkpoint on transfer)",
+      "pass": true,
+      "detail": "15 YT left",
+      "tx": "https://explorer.test.mezo.org/tx/0x9d0f695d276b742864a41564aa8a3f8017932e947bcb2bf81289eef788aaefdb"
+    },
+    {
+      "persona": "Efe",
+      "check": "Merge 10 PT + 10 YT back into exactly 10 MUSD",
+      "pass": true,
+      "detail": "10.0000 MUSD",
+      "tx": "https://explorer.test.mezo.org/tx/0xbcc32a63310a019bc314db99924866aa380561ca6ee706a6ee38963eb6862d7e"
+    },
+    {
+      "persona": "Efe",
+      "check": "Invariant: market's sMUSD equals PT supply",
+      "pass": true,
+      "detail": "1272.00 PT = 1272.00 sMUSD",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Fix yield without approving MUSD",
+      "pass": true,
+      "detail": "reverted with ERC20InsufficientAllowance",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Fix yield with more MUSD than she has",
+      "pass": true,
+      "detail": "reverted with ERC20InsufficientBalance",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Impossible minimum (slippage guard)",
+      "pass": true,
+      "detail": "reverted with Slippage",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Sell PT she doesn't have",
+      "pass": true,
+      "detail": "reverted with ERC20InsufficientBalance",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Zero amount",
+      "pass": true,
+      "detail": "reverted with ZeroAmount",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Pass a fake pool",
+      "pass": true,
+      "detail": "reverted",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Redeem PT before maturity",
+      "pass": true,
+      "detail": "reverted with NotMatured",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Call the swap callback directly",
+      "pass": true,
+      "detail": "reverted with UnauthorizedCallback",
+      "tx": null
+    },
+    {
+      "persona": "Funmi",
+      "check": "Quote for 100,000 MUSD reports a partial fill (app shows the limit)",
+      "pass": true,
+      "detail": "pool can take 800.58 MUSD",
+      "tx": null
+    }
+  ]
+}

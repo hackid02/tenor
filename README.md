@@ -78,6 +78,8 @@ MUSD ──► sMUSD ──┤
 
 A 5-minute guide with free testnet tokens: [docs/TESTING.md](docs/TESTING.md).
 
+Team QA (persona journeys and a full website click-through on Mezo Testnet, with every bug found and fixed): [docs/QA.md](docs/QA.md). QA wallets are labelled "Team QA" in the app and are not counted as users.
+
 ## Tests
 
 ```bash

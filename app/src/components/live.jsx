@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useBlockNumber } from "wagmi";
-import { LINKS, mezoTestnet } from "../config";
+import { CHAIN, LINKS, mezoTestnet } from "../config";
 import { date, percent, short } from "../lib/format";
 
 const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto", style: "short" });
@@ -100,17 +100,32 @@ const KIND_LABEL = {
   claim: "Claim",
 };
 
+/**
+ * Who sent it. Wallets run by the Tenor team (the LP/deployer wallet and the
+ * QA persona wallets) are labelled as such, so team activity is never
+ * mistaken for outside users.
+ */
+function Who({ from, me }) {
+  const a = from.toLowerCase();
+  if (me && a === me.toLowerCase()) return "You";
+  const team = CHAIN.team?.[a];
+  if (team) return <span className="team-tag" title={from}>{team}</span>;
+  return <span className="mono">{short(from)}</span>;
+}
+
 /** Every Tenor action on this market, newest first, linked to the explorer. */
 export function ActivityFeed({ history, me }) {
   const now = useNow();
   const [showAll, setShowAll] = useState(false);
   const all = history.data?.activity || [];
   const items = showAll ? all : all.slice(0, 6);
+  // Distinct senders that are not team or QA wallets.
+  const outside = new Set(all.map((x) => x.from.toLowerCase()).filter((a) => !CHAIN.team?.[a])).size;
   return (
     <section className="card activity" aria-labelledby="act-title">
       <div className="card-head">
         <h2 id="act-title">Live activity</h2>
-        <span className="muted small">{history.data ? `${history.data.count} on-chain` : ""}</span>
+        <span className="muted small">{history.data ? `${history.data.count} on-chain${outside ? ` · ${outside} outside wallet${outside === 1 ? "" : "s"}` : ""}` : ""}</span>
       </div>
       {history.isLoading && (
         <ul className="act-list" aria-hidden="true">
@@ -134,7 +149,7 @@ export function ActivityFeed({ history, me }) {
                   {it.title} {it.detail && <span className="act-detail">{it.detail}</span>}
                 </a>
                 <span className="act-meta">
-                  {me && it.from.toLowerCase() === me.toLowerCase() ? "You" : <span className="mono">{short(it.from)}</span>} · {ago(it.ts, now)}
+                  <Who from={it.from} me={me} /> · {ago(it.ts, now)}
                 </span>
               </div>
             </li>

@@ -51,7 +51,7 @@ export function Position({ t, tx }) {
                   <button
                     type="button"
                     className="btn"
-                    disabled={tx.busy || !exit?.ok}
+                    disabled={tx.busy || (t.approved.pt && !exit?.ok)}
                     onClick={() =>
                       t.approved.pt
                         ? send(`Sell ${amount(t.pt)} PT`, {

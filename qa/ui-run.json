@@ -1,0 +1,56 @@
+{
+  "time": "2026-11-11T12:48:56.793Z",
+  "note": "Gina, a Team QA persona with a throwaway test wallet, clicked through the real Tenor interface (local build of the same code as the live site) against Mezo Testnet.",
+  "results": [
+    {
+      "step": "Connect wallet from the header (EIP-6963 wallet picker)",
+      "pass": true,
+      "detail": "connected; header shows 0x66F1…5A00"
+    },
+    {
+      "step": "Enter 10 MUSD in Fix my yield",
+      "pass": true,
+      "detail": "balance 15.00 MUSD shown; quote 10.0876 PT at 6.65%; button asks to Approve MUSD"
+    },
+    {
+      "step": "Approve MUSD",
+      "pass": true,
+      "detail": "Confirm → Waiting → Done; 100,000 gas floor; [tx](https://explorer.test.mezo.org/tx/0x0eea5fe3f1a9a9546e56b152bee1c2d533b57b7855ecb74ca6652bc8d8ee2cff)"
+    },
+    {
+      "step": "Lock 6.65% until Dec 31, 2026",
+      "pass": true,
+      "detail": "received exactly the quoted 10.0876 PT; 1,000,000 gas floor; [tx](https://explorer.test.mezo.org/tx/0x33ca968a3ae219420024b00a18eb8c6a2bca708d5acac52c33b9349d28dbf2f3)"
+    },
+    {
+      "step": "Position card and Live activity update",
+      "pass": true,
+      "detail": "PT 10.0876, MUSD 5.00; trade listed as \"You\" (others see Team QA · Gina)"
+    },
+    {
+      "step": "Approve PT, then Sell PT early",
+      "pass": true,
+      "detail": "sold 10.0876 PT for 9.998 MUSD; [approve](https://explorer.test.mezo.org/tx/0xd3c32f5bdd08b60a6fc929565c5b9b5969228bf40b70c11a706429f6e068e5e1) · [sell](https://explorer.test.mezo.org/tx/0x2be147ef8a284e221da2807079a004eb23d959b3c1f45106b2e62f378fc7f50a)"
+    },
+    {
+      "step": "Round trip cost",
+      "pass": true,
+      "detail": "15.000 → 14.998 MUSD (0.01%)"
+    },
+    {
+      "step": "Enter more than the balance (50 MUSD)",
+      "pass": true,
+      "detail": "\"You have 15.00 MUSD.\"; button disabled as \"Not enough MUSD\""
+    },
+    {
+      "step": "Disconnect",
+      "pass": true,
+      "detail": "back to Connect wallet; position card asks to connect"
+    },
+    {
+      "step": "Bug found: Approve PT button waited for the sell price to load",
+      "pass": true,
+      "detail": "fixed: approving no longer needs a price"
+    }
+  ]
+}

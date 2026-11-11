@@ -1503,6 +1503,20 @@
             1.0005
           ]
         }
+      },
+      "team": {
+        "0x8de0eab64571a1f0289535c3d255f765bf375dad": "Team",
+        "0x8ca89b81655672f1e9322562aff80e2a81fe2baa": "Team QA · Ada",
+        "0x5a3cb4c9e1ed662faee304134581243b9c3027ec": "Team QA · Bayo",
+        "0xd77369d29d57e746155fef09bbc577f9459f172c": "Team QA · Chidi",
+        "0xaa1b7e7dabf539abf0298816e3904da42e031adb": "Team QA · Dami",
+        "0x7eff3d57f8ae05f4a9706e1ac71c043c428b7f9b": "Team QA · Efe",
+        "0x922147356dbe89dac23dc0a0131aa02b46a96dec": "Team QA · Funmi",
+        "0x66f18163d75e2848ce41ffdff0e7455b46475a00": "Team QA · Gina",
+        "0xa81c4bd4259a7766d3d749df40991b96ac272562": "Team QA · Run-1",
+        "0x5d905b6b478e1adf751f627df9e06795e7b9b6d9": "Team QA · Run-1",
+        "0x29f6c316119cdc832deab87b7b119ea8e4b966dd": "Team QA · Run-1",
+        "0x1d52791acb2fca1afd725733621595be0ad44a2e": "Team QA · Run-1"
       }
     }
   }

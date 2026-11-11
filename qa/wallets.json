@@ -1,0 +1,13 @@
+{
+  "0x8ca89B81655672F1e9322562AFf80e2a81Fe2BAA": "Ada (saver)",
+  "0x5a3cb4C9E1Ed662FAee304134581243B9C3027ec": "Bayo (yield seller)",
+  "0xD77369d29d57e746155fef09BBC577F9459f172C": "Chidi (YT trader)",
+  "0xAa1B7e7dabF539ABf0298816E3904Da42e031adb": "Dami (early exit)",
+  "0x7Eff3D57f8Ae05f4a9706E1aC71c043C428B7F9b": "Efe (split and merge)",
+  "0x922147356dbE89dAc23dc0A0131AA02B46A96dec": "Funmi (edge cases)",
+  "0x66F18163D75E2848cE41fFDFF0e7455b46475A00": "Gina (website tester)",
+  "0xA81C4bD4259A7766d3d749Df40991B96ac272562": "Run-1 (first QA run, saver or yield seller)",
+  "0x5d905B6b478e1aDf751f627dF9e06795e7B9B6d9": "Run-1 (first QA run, saver or yield seller)",
+  "0x29F6C316119cdc832dEAB87B7b119ea8E4b966dD": "Run-1 (first QA run, YT trader)",
+  "0x1D52791aCB2FCA1afD725733621595BE0aD44A2e": "Run-1 (first QA run, early exit; hit the gas bug)"
+}

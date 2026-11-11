@@ -52,7 +52,17 @@ async function main() {
         range: m.clPosition ? [m.clPosition.lowPt, m.clPosition.highPt] : null,
       };
     }
-    out.chains[cid] = { ...ADDR[cid], router: dep.router, quoter: dep.quoter, markets };
+    // Wallets run by the Tenor team, so the app can label them honestly:
+    // the deployer/LP wallet and the QA persona wallets from scripts/qa-personas.js.
+    const team = {};
+    for (const m of Object.values(dep.markets)) if (m.treasury) team[m.treasury.toLowerCase()] = "Team";
+    const qaFile = path.join(root, "qa", "wallets.json");
+    if (cid === "31611" && fs.existsSync(qaFile)) {
+      for (const [addr, name] of Object.entries(JSON.parse(fs.readFileSync(qaFile, "utf8")))) {
+        team[addr.toLowerCase()] = `Team QA · ${name.split(" ")[0]}`;
+      }
+    }
+    out.chains[cid] = { ...ADDR[cid], router: dep.router, quoter: dep.quoter, markets, team };
   }
 
   const dest = path.join(root, "app", "src", "generated", "contracts.json");

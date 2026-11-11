@@ -49,8 +49,13 @@ export function useTx(onDone) {
     try {
       setState({ status: "pending", scope, label });
       const { request } = await pc.simulateContract({ ...req, account: wallet.account });
-      const gas = await pc.estimateContractGas({ ...req, account: wallet.account });
-      hash = await wallet.writeContract({ ...request, gas: gas * 2n });
+      // Mezo's RPC is several nodes behind one URL, and one estimate came back
+      // at half the gas the trade needed (found in QA). Never rely on a single
+      // estimate: take 2x, with a floor. Gas costs fractions of a cent on Mezo.
+      const est = await pc.estimateContractGas({ ...req, account: wallet.account });
+      const floor = req.functionName === "approve" ? 100_000n : 1_000_000n;
+      const gas = est * 2n > floor ? est * 2n : floor;
+      hash = await wallet.writeContract({ ...request, gas });
     } catch (e) {
       // Nothing was sent: wallet rejection or a failed simulation.
       setState({ status: "error", scope, label, error: explain(e) });
