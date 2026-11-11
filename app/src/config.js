@@ -52,6 +52,8 @@ export const MUSD_MIN_LOAN = 1800;
 export const LINKS = {
   github: "https://github.com/hackid02/tenor",
   proof: "https://github.com/hackid02/tenor/blob/main/PROOF.md",
+  feedback: "https://github.com/hackid02/tenor/issues/new?template=tester-feedback.yml",
+  testing: "https://github.com/hackid02/tenor/blob/main/docs/TESTING.md",
   faucet: "https://faucet.test.mezo.org",
   mezoApp: "https://testnet.mezo.org",
   explorer: mezoTestnet.blockExplorers.default.url,

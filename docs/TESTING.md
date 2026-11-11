@@ -21,9 +21,19 @@ Tenor lets you lock a fixed rate on MUSD, or sell your future yield for MUSD now
 
 Each action needs an **Approve** first (one time per token), then the action itself.
 
-## 3. Send back
+## 3. Tell us how it went (1 minute)
 
-- Your wallet address (so we can link your transactions in our proof page)
-- Anything confusing, slow or broken, even small things
+Fill in the short form: **https://github.com/hackid02/tenor/issues/new?template=tester-feedback.yml** (also linked as **Give feedback** after each trade and in the page footer). Anything confusing, slow or broken counts, even small things.
 
-Thank you. Your transaction shows up in **Live activity** on the page within about 20 seconds.
+You don't need to send your wallet address: your transaction shows up in **Live activity** within about 20 seconds, and on our [users page](USERS.md), which is read from the chain.
+
+## If something goes wrong
+
+| You see | Do this |
+|---|---|
+| "Not enough BTC for gas" | Get more from the faucet. Gas costs a fraction of a cent. |
+| "You have no test MUSD" | Swap a little BTC to MUSD on testnet.mezo.org (step 1.4). |
+| The trade says "Sent" but not "Done" | Mezo's RPC can lag. Click **Explorer**; it usually confirms within a minute. |
+| Your wallet shows a high gas limit | Normal. Tenor sets a generous limit because Mezo's estimates vary; you only pay for gas actually used. |
+
+Thank you!

@@ -1,0 +1,40 @@
+name: Tester feedback
+description: You tried Tenor on Mezo Testnet. Tell us what worked and what didn't.
+title: "Feedback: "
+labels: ["tester feedback"]
+body:
+  - type: checkboxes
+    id: tried
+    attributes:
+      label: What did you try?
+      options:
+        - label: Fix my yield (buy PT)
+        - label: Sell future yield
+        - label: Buy or sell YT
+        - label: Exit early (sell PT)
+        - label: Split or merge
+        - label: Claim yield
+  - type: dropdown
+    id: worked
+    attributes:
+      label: Did it work?
+      options:
+        - "Yes, first try"
+        - "Yes, after some trouble"
+        - "No"
+    validations:
+      required: true
+  - type: textarea
+    id: confusing
+    attributes:
+      label: What was confusing, slow or broken?
+      description: Small things count. Screenshots help.
+  - type: textarea
+    id: useful
+    attributes:
+      label: Would you use fixed rates on MUSD on mainnet? Why or why not?
+  - type: input
+    id: wallet
+    attributes:
+      label: Wallet address (optional)
+      description: Lets us link your transactions on our users page. Only share it if you are happy for it to be public.

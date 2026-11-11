@@ -107,6 +107,11 @@ export function TxStatus({ tx, scope }) {
           Explorer
         </a>
       )}
+      {s.status === "done" && !/^Approve/.test(s.label || "") && (
+        <a href={LINKS.feedback} target="_blank" rel="noreferrer">
+          Give feedback
+        </a>
+      )}
       {(s.status === "done" || s.status === "error" || s.status === "sent") && (
         <button type="button" className="icon-btn" onClick={tx.reset} aria-label="Dismiss">
           ×

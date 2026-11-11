@@ -46,6 +46,7 @@ export function Footer({ m }) {
           <ul>
             {link(LINKS.proof, "On-chain proof")}
             {link(LINKS.github, "Source code")}
+            {link(LINKS.feedback, "Give feedback")}
             <li><a href="#risks">Risks</a></li>
           </ul>
         </div>

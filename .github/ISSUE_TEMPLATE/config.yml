@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Try Tenor (5-minute guide)
+    url: https://github.com/hackid02/tenor/blob/main/docs/TESTING.md
+    about: Free testnet tokens and step-by-step instructions.
