@@ -6,3 +6,7 @@ coverage
 typechain-types
 deployments/31337.json
 .claude/
+
+# Demo film: renders, captures and the throwaway demo wallet key
+video/build/
+video/out/

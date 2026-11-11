@@ -1,0 +1,15 @@
+{
+  "name": "tenor-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "voice": "python voice.py",
+    "shots": "node shots.mjs",
+    "render": "node render.mjs",
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "puppeteer-core": "^23.11.1"
+  }
+}

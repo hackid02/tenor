@@ -82,3 +82,4 @@ A fresh Team QA wallet (Hana) ran every flow through the real UI on localhost ag
 | `0x29F6C316119cdc832dEAB87B7b119ea8E4b966dD` | Run-1 (first QA run, YT trader) |
 | `0x1D52791aCB2FCA1afD725733621595BE0aD44A2e` | Run-1 (first QA run, early exit; hit the gas bug) |
 | `0x73D34E243BE04aDc3f9CAe5d86B35530a45d05Ac` | Hana (final website check) |
+| `0x61477A660387ac917830a8Ca66e3f1B89460361a` | Demo film wallet |
