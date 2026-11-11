@@ -308,6 +308,7 @@ const CK = 1.2, CX = 1060, CY = 64;
     const since = t < tClick - 0.3 ? a : t < tSell + 0.3 ? tClick - 0.3 : tSell + 0.3;
     set(eb, { y: (1 - TYPE(t - since)) * 24, o: appear(t, since) });
     set(h1, { y: (1 - TYPE(t - since - 0.05)) * 36, o: appear(t, since + 0.05) });
+    sub.style.top = 350 + h1.offsetHeight + 28 + "px"; // always below the headline, one line or two
     set(sub, { y: (1 - TYPE(t - since - 0.12)) * 30, o: appear(t, since + 0.12) });
     set(hGet, { o: appear(t, tPT) * (1 - appear(t, tWorth)) * (state === "ready" ? 1 : 0) });
     set(hWorth, { o: appear(t, tWorth) * (state === "ready" ? 1 : 0) });

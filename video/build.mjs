@@ -97,7 +97,7 @@ const inputs = [], delays = [];
 TL.lines.forEach((l, i) => { inputs.push("-i", path.join(HERE, l.file)); delays.push(`[${i + 1}:a]adelay=${Math.round(l.start * 1000)}|${Math.round(l.start * 1000)},aformat=channel_layouts=stereo[v${i}]`); });
 const n = TL.lines.length;
 const graph = `${delays.join(";")};${TL.lines.map((_, i) => `[v${i}]`).join("")}amix=inputs=${n}:normalize=0[voice];[voice]acompressor=threshold=-20dB:ratio=3:attack=5:release=120[vc];[${n + 1}:a]aformat=channel_layouts=stereo,volume=0.9[bg];[vc][bg]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9[a]`;
-await run(["-y", "-i", silent, ...inputs, "-i", B("fx.wav"), "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", path.join(HERE, "out", "tenor-demo.mp4")]);
+await run(["-y", "-i", silent, ...inputs, "-i", B("fx.wav"), "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-ar", "48000", "-b:a", "192k", "-shortest", path.join(HERE, "out", "tenor-demo.mp4")]);
 // Captions also as a separate subtitle file (YouTube can use it).
 const srtTime = (s) => { const ms = Math.round(s * 1000); const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, sec = Math.floor(ms / 1000) % 60; return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")},${String(ms % 1000).padStart(3, "0")}`; };
 fs.writeFileSync(path.join(HERE, "out", "tenor-demo.srt"), TL.lines.map((l, i) => `${i + 1}\n${srtTime(l.start)} --> ${srtTime(l.end)}\n${l.text}\n`).join("\n"));
