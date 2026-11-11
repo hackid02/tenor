@@ -80,7 +80,7 @@ A 5-minute guide with free testnet tokens: [docs/TESTING.md](docs/TESTING.md).
 
 Team QA (persona journeys and a full website click-through on Mezo Testnet, with every bug found and fixed): [docs/QA.md](docs/QA.md). QA wallets are labelled "Team QA" in the app and are not counted as users.
 
-Who has used it, read from the chain and split into outside wallets and team wallets: [docs/USERS.md](docs/USERS.md) (`node scripts/users.js`). Tester feedback is public in [GitHub issues](https://github.com/hackid02/tenor/issues?q=label%3A%22tester+feedback%22).
+Who has used it, read from the chain and split into outside wallets and team wallets: [docs/USERS.md](docs/USERS.md) (`node scripts/users.js`). Tester feedback is public in [GitHub issues](https://github.com/hackid02/tenor/issues?q=is%3Aissue+in%3Atitle+Feedback).
 
 ## Tests
 
