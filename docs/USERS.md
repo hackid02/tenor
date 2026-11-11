@@ -1,17 +1,18 @@
 # Who has used Tenor
 
-Read from Mezo Testnet at block 16715258 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
+Read from Mezo Testnet at block 16716281 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
 
 | | Wallets | Transactions |
 |---|---|---|
-| **Outside wallets** (not on the team or QA list) | **1** | **1** |
-| Team and Team QA wallets ([docs/QA.md](QA.md)) | 12 | 39 |
+| **Outside wallets** (not on the team or QA list) | **2** | **3** |
+| Team and Team QA wallets ([docs/QA.md](QA.md)) | 13 | 41 |
 
 ## Outside wallets
 
 | Wallet | What they did | First transaction |
 |---|---|---|
 | [`0x9bFD7dec27547FC7b499158422656703439e5Ae8`](https://explorer.test.mezo.org/address/0x9bFD7dec27547FC7b499158422656703439e5Ae8) | Fix yield | [0x638d388b…](https://explorer.test.mezo.org/tx/0x638d388b8c87a6178445983e6ff74762375c32fdfc00a7ebebf84202750d6bfe) |
+| [`0x19B3a1E14aD4073D8A30160d0eea0294F7795cA3`](https://explorer.test.mezo.org/address/0x19B3a1E14aD4073D8A30160d0eea0294F7795cA3) | Sell future yield, Buy YT | [0xfc04ac45…](https://explorer.test.mezo.org/tx/0xfc04ac4501c43682fc04f073e5550ea162a56609fe23a3ca9c869155a3b85149) |
 
 ## Team wallets
 
@@ -28,4 +29,5 @@ Read from Mezo Testnet at block 16715258 by `node scripts/users.js`. Every walle
 | `0xAa1B7e7dabF539ABf0298816E3904Da42e031adb` | Team QA · Dami | Fix yield, Sell PT |
 | `0x7Eff3D57f8Ae05f4a9706E1aC71c043C428B7F9b` | Team QA · Efe | Split, Merge |
 | `0x66F18163D75E2848cE41fFDFF0e7455b46475A00` | Team QA · Gina | Fix yield, Sell PT |
-| `0x73D34E243BE04aDc3f9CAe5d86B35530a45d05Ac` | Team QA · Hana | Fix yield, Sell future yield, Buy YT, Sell YT, Sell PT |
+| `0x73D34E243BE04aDc3f9CAe5d86B35530a45d05Ac` | Team QA · Hana | Fix yield ×2, Sell future yield, Buy YT, Sell YT, Sell PT |
+| `0x61477A660387ac917830a8Ca66e3f1B89460361a` | Team QA · Demo | Fix yield |

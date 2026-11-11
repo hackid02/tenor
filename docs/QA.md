@@ -61,6 +61,8 @@ Gina, a Team QA persona with a throwaway test wallet, clicked through the real T
 | Final website check (Hana) | On a market where PT trades above 1 MUSD, Buy YT showed a cost of 0 and a negative break-even, and the router would revert | Buy YT is blocked with a plain explanation when PT is at or above 1 MUSD |
 | Final website check (Hana) | Dust amounts (0.0000001 MUSD) could be submitted, and leading zeros stayed in the field | Minimum trade 0.01; leading zeros removed |
 | Outside testers on MetaMask mobile | After a reload, the wallet looked connected but refused the first transaction: "The requested method and/or account has not been authorized" (EIP-1193 4100). Reconnecting fixed it | Before sending, the app checks the wallet still lists the account; on 4100 it asks the wallet to authorize again and retries, from the same click. Tested with a wallet that reproduces the 4100 state |
+| First outside tester | Approved MUSD, then stopped: the Approve step read like the trade itself, so no trade was sent until we explained | Under the button: "Step 1 of 2: approve MUSD once. Then confirm the trade.", then "Step 2 of 2: confirm the trade." |
+| Approve-hint check (Ivo) | With a tiny amount (0.05 MUSD) the chart's three end values all read 0.05 | End values use enough decimals to differ |
 | Rate history on the demo market | A PT price above 1 MUSD drew a fixed APY of -13.44% | Shown as "none", matching the headline |
 
 ## Final website check (Nov 11)
@@ -84,3 +86,4 @@ A fresh Team QA wallet (Hana) ran every flow through the real UI on localhost ag
 | `0x1D52791aCB2FCA1afD725733621595BE0aD44A2e` | Run-1 (first QA run, early exit; hit the gas bug) |
 | `0x73D34E243BE04aDc3f9CAe5d86B35530a45d05Ac` | Hana (final website check) |
 | `0x61477A660387ac917830a8Ca66e3f1B89460361a` | Demo film wallet |
+| `0x3954bA4c660Fa03aFEC037C3a265cca7dA4524C8` | Ivo (approve hint check) |

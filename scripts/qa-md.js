@@ -50,6 +50,8 @@ L.push("| Live site, day 2 | Activity feed failed once markets passed 10,000 blo
 L.push("| Final website check (Hana) | On a market where PT trades above 1 MUSD, Buy YT showed a cost of 0 and a negative break-even, and the router would revert | Buy YT is blocked with a plain explanation when PT is at or above 1 MUSD |");
 L.push("| Final website check (Hana) | Dust amounts (0.0000001 MUSD) could be submitted, and leading zeros stayed in the field | Minimum trade 0.01; leading zeros removed |");
 L.push("| Outside testers on MetaMask mobile | After a reload, the wallet looked connected but refused the first transaction: \"The requested method and/or account has not been authorized\" (EIP-1193 4100). Reconnecting fixed it | Before sending, the app checks the wallet still lists the account; on 4100 it asks the wallet to authorize again and retries, from the same click. Tested with a wallet that reproduces the 4100 state |");
+L.push("| First outside tester | Approved MUSD, then stopped: the Approve step read like the trade itself, so no trade was sent until we explained | Under the button: \"Step 1 of 2: approve MUSD once. Then confirm the trade.\", then \"Step 2 of 2: confirm the trade.\" |");
+L.push("| Approve-hint check (Ivo) | With a tiny amount (0.05 MUSD) the chart's three end values all read 0.05 | End values use enough decimals to differ |");
 L.push("| Rate history on the demo market | A PT price above 1 MUSD drew a fixed APY of -13.44% | Shown as \"none\", matching the headline |");
 L.push("");
 L.push("## Final website check (Nov 11)");

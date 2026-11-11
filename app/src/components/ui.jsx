@@ -77,12 +77,20 @@ export function ActionButton({ tx, scope, blocker, approve, children, onClick })
     action = () => tx.approve(scope, approve.token, approve.spender, approve.label);
   }
 
+  // Testers read "Approve" as the trade itself. Say it is one of two steps.
+  let step = null;
+  if (chainId === mezoTestnet.id && !blocker) {
+    if (approve) step = `Step 1 of 2: approve ${approve.label.replace(/^Approve\s*/, "")} once. Then confirm the trade.`;
+    else if (tx.state.scope === scope && tx.state.status === "done" && /^Approve/.test(tx.state.label || "")) step = "Step 2 of 2: confirm the trade.";
+  }
+
   return (
     <>
       <button type="button" className="btn primary block" disabled={disabled} onClick={action}>
         {tx.busy && tx.state.scope === scope ? <span className="spinner" aria-hidden="true" /> : null}
         {label}
       </button>
+      {step && !(tx.busy && tx.state.scope === scope) && <p className="step-hint">{step}</p>}
       <TxStatus tx={tx} scope={scope} />
     </>
   );

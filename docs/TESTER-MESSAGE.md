@@ -48,3 +48,19 @@ When someone tries it, actually test their project back and leave useful feedbac
 
 - Don't pay or reward people for transactions, and don't create wallets for friends. Judges can check where a wallet's funds came from, and bought or team-made "users" would hurt more than zero.
 - Don't send private keys or ask for them.
+
+## Follow-up to friends (after the fixes on Nov 11)
+
+To friends who haven't finished a trade:
+
+> Hey! I fixed the "not authorized" error some of you got, and made the steps clearer. Could you try once more? Close the page fully and open it again so you get the new version: https://tenorfi.vercel.app
+>
+> Type 10 in "Fix my yield", tap **Approve MUSD** (step 1), then tap the button again to **Lock** (step 2). That's it.
+
+To friends who already traded:
+
+> Thank you for testing! One last favour: reply with 1–2 honest lines.
+> 1. What was confusing or annoying?
+> 2. Would you use something like this with real money? Why or why not?
+>
+> I'm quoting a few answers (first name or initials only) in my submission. Tell me if you'd rather I don't use yours.

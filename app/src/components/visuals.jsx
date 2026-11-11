@@ -62,6 +62,8 @@ export function FixChart({ musdIn, valueAtMaturity, apy, maturity, variableLow, 
     bandD += "Z";
   }
   const dec = tickDecimals(step);
+  // End values need enough decimals to differ, even for tiny amounts.
+  const endDec = Math.min(6, Math.max(2, dec + 1));
   const months = monthStarts(now, maturity).filter((t) => {
     const px = x((t - now) / span);
     return px > pad.l + 44 && px < pad.l + pw - 52;
@@ -69,9 +71,9 @@ export function FixChart({ musdIn, valueAtMaturity, apy, maturity, variableLow, 
 
   const ends = spread(
     [
-      ok && { key: "fixed", y: y(valueAtMaturity), text: amount(valueAtMaturity, 2), cls: "ch-endlabel strong" },
-      band && { key: "hi", y: y(varAt(highR, 1)), text: amount(varAt(highR, 1), 2), cls: "ch-endlabel" },
-      band && { key: "lo", y: y(varAt(lowR, 1)), text: amount(varAt(lowR, 1), 2), cls: "ch-endlabel" },
+      ok && { key: "fixed", y: y(valueAtMaturity), text: amount(valueAtMaturity, endDec), cls: "ch-endlabel strong" },
+      band && { key: "hi", y: y(varAt(highR, 1)), text: amount(varAt(highR, 1), endDec), cls: "ch-endlabel" },
+      band && { key: "lo", y: y(varAt(lowR, 1)), text: amount(varAt(lowR, 1), endDec), cls: "ch-endlabel" },
     ].filter(Boolean),
     14,
     pad.t + 4,
