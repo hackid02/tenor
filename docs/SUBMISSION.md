@@ -21,7 +21,7 @@ Copy each answer into the form. Fill the two `[YOU]` items yourself.
 - GitHub: https://github.com/hackid02/tenor
 - On-chain proof: https://github.com/hackid02/tenor/blob/main/PROOF.md
 - Deck: https://github.com/hackid02/tenor/blob/main/docs/tenor-deck.pdf
-- Video: [YOU: YouTube link, under 2:00]
+- Video (1:35): https://youtu.be/IBrvZi0Eaug
 
 ---
 

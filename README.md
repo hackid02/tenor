@@ -9,7 +9,7 @@ Mezo's savings vault (sMUSD) pays a variable rate: about 5% in April 2026, about
 
 PT trades against MUSD in a concentrated-liquidity pool on Mezo Pools, so every action is one transaction.
 
-> **Live app: [tenorfi.vercel.app](https://tenorfi.vercel.app)** on Mezo Testnet · On-chain proof: [PROOF.md](PROOF.md)
+> **Live app: [tenorfi.vercel.app](https://tenorfi.vercel.app)** on Mezo Testnet · **Demo video (1:35): [youtu.be/IBrvZi0Eaug](https://youtu.be/IBrvZi0Eaug)** · On-chain proof: [PROOF.md](PROOF.md)
 
 ---
 
