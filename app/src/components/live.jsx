@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useBlockNumber } from "wagmi";
 import { CHAIN, LINKS, mezoTestnet } from "../config";
 import { date, percent, short } from "../lib/format";
+import { dayLabel, tickDecimals, ticks, useHover, useWidth } from "../lib/chart";
 
 const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto", style: "short" });
 function ago(ts, now) {
@@ -40,50 +41,83 @@ export function LiveStatus() {
 
 /**
  * Fixed APY after every trade since the pool opened, plus the current rate.
- * Points are spaced by trade, not by time, so a burst of trades stays readable.
+ * Points are spaced by trade, not by time, so a burst of trades stays readable;
+ * hover shows each trade's date.
  */
 export function RateHistory({ points, current }) {
+  const [ref, W] = useWidth();
   const now = Date.now() / 1000;
-  const pts = [...(points || [])];
-  if (current != null) pts.push({ ts: now, apy: current });
-  if (pts.length < 2) return null;
+  // A rate at or below 0 means PT trades at or above 1 MUSD: there is no
+  // fixed yield, so it is drawn at 0 and labelled "none", like the headline.
+  const pts = (points || []).map((p) => ({ ...p, apy: Math.max(0, p.apy) }));
+  if (current != null) pts.push({ ts: now, apy: Math.max(0, current), now: true });
+  const rate = (v) => (v > 0 ? percent(v) : "none");
+  const n = pts.length;
+  const H = 132;
+  const pad = { l: 34, r: 54, t: 12, b: 24 };
+  const pw = W - pad.l - pad.r;
+  const ph = H - pad.t - pad.b;
+  const { f: hf, bind } = useHover(pad.l, pw);
+  if (n < 2) return null;
 
-  const W = 320;
-  const H = 72;
-  const t0 = pts[0].ts;
-  const trades = pts.length - 2; // minus the opening price and "now"
+  const trades = n - 2; // minus the opening price and "now"
   const vals = pts.map((p) => p.apy);
-  let lo = Math.min(...vals);
-  let hi = Math.max(...vals);
-  const padV = Math.max((hi - lo) * 0.2, 0.002);
-  lo -= padV;
-  hi += padV;
-  const x = (i) => (i / (pts.length - 1)) * W;
-  const y = (v) => 6 + (1 - (v - lo) / (hi - lo)) * (H - 12);
+  const { values: yTicks, step } = ticks(Math.min(...vals), Math.max(...vals), 3);
+  const lo = Math.min(yTicks[0], ...vals) - step * 0.15;
+  const hi = Math.max(yTicks[yTicks.length - 1], ...vals) + step * 0.15;
+  const x = (i) => pad.l + (i / (n - 1)) * pw;
+  const y = (v) => pad.t + (1 - (v - lo) / (hi - lo || 1)) * ph;
   // Step line: the rate holds until the next trade moves it.
-  let d = `M0 ${y(pts[0].apy).toFixed(1)}`;
-  for (let i = 1; i < pts.length; i++) {
-    d += ` H${x(i).toFixed(1)} V${y(pts[i].apy).toFixed(1)}`;
-  }
+  let d = `M${x(0)} ${y(pts[0].apy).toFixed(1)}`;
+  for (let i = 1; i < n; i++) d += ` H${x(i).toFixed(1)} V${y(pts[i].apy).toFixed(1)}`;
+  const area = `${d} V${pad.t + ph} H${x(0)} Z`;
   const first = pts[0].apy;
-  const last = pts[pts.length - 1].apy;
+  const last = pts[n - 1].apy;
+  const dec = Math.max(0, tickDecimals(step * 100));
+  const hi_ = hf == null ? null : Math.min(n - 1, Math.max(0, Math.round(hf * (n - 1))));
+  const hp = hi_ == null ? null : pts[hi_];
 
   return (
-    <figure className="history" aria-label={`Fixed APY moved from ${percent(first)} to ${percent(last)} over ${trades} trades.`}>
+    <figure className="chart history" aria-label={`Fixed APY moved from ${rate(first)} to ${rate(last)} over ${trades} trades.`}>
       <div className="history-top">
         <span>Fixed APY since launch</span>
-        <span className="num">{percent(first)} → {percent(last)}</span>
+        <span className="num">{rate(first)} → {rate(last)}</span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
-        <path d={d} className="hist-line" />
-        {pts.slice(0, -1).map((p, i) => (
-          <circle key={i} cx={x(i)} cy={y(p.apy)} r="2.5" className="hist-dot" />
-        ))}
-        <circle cx={W} cy={y(last)} r="3.5" className="hist-now" />
-      </svg>
-      <figcaption>
-        <span>Opened {date(t0)}</span>
-        <span>{trades} {trades === 1 ? "trade" : "trades"} · now</span>
+      <div ref={ref} className="chart-plot" {...bind}>
+        <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+          {yTicks.map((v) => (
+            <g key={v}>
+              <line x1={pad.l} x2={pad.l + pw} y1={y(v)} y2={y(v)} className="ch-grid" />
+              <text x={pad.l - 8} y={y(v) + 3.5} textAnchor="end" className="ch-glabel">{(v * 100).toFixed(dec)}%</text>
+            </g>
+          ))}
+          <path d={area} className="ch-area" />
+          <path d={d} className="ch-line" />
+          {pts.slice(1, -1).map((p, i) => (
+            <line key={i} x1={x(i + 1)} x2={x(i + 1)} y1={pad.t + ph} y2={pad.t + ph - 5} className="ch-rug" />
+          ))}
+          <circle cx={x(0)} cy={y(first)} r="3" className="ch-start" />
+          <circle cx={x(n - 1)} cy={y(last)} r="9" className="ch-ring" />
+          <circle cx={x(n - 1)} cy={y(last)} r="4" className="ch-dot" />
+          <text x={W} y={y(last) + 4} textAnchor="end" className="ch-endlabel strong">{rate(last)}</text>
+          <text x={pad.l} y={H - 6} className="ch-xlabel">Opened {dayLabel(pts[0].ts)}</text>
+          <text x={pad.l + pw} y={H - 6} textAnchor="end" className="ch-xlabel">Now</text>
+          {hp && (
+            <g>
+              <line x1={x(hi_)} x2={x(hi_)} y1={pad.t} y2={pad.t + ph} className="ch-cross" />
+              <circle cx={x(hi_)} cy={y(hp.apy)} r="3.5" className="ch-dot" />
+            </g>
+          )}
+        </svg>
+        {hp && (
+          <div className="ch-tip" style={{ left: Math.min(Math.max(x(hi_), 70), W - 70) }}>
+            <span>{hp.now ? "Now" : hi_ === 0 ? `Opened ${dayLabel(hp.ts)}` : `Trade ${hi_} · ${dayLabel(hp.ts)}`}</span>
+            <b className="num">{rate(hp.apy)}</b>
+          </div>
+        )}
+      </div>
+      <figcaption className="chart-legend">
+        <span><i className="lg-rug" />{trades} {trades === 1 ? "trade" : "trades"}, one tick each</span>
       </figcaption>
     </figure>
   );

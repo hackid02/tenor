@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { ABI, CHAIN, LINKS } from "../config";
+import { ABI, CHAIN, LINKS, SMUSD_APRIL_APR } from "../config";
 import { ME } from "../hooks/useTx";
 import { amount, date, numToWei, percent, toWei } from "../lib/format";
 import { useQuote } from "../hooks/useQuote";
+import { useSmusdRate } from "../hooks/useSmusdRate";
 import { ActionButton, AmountField, Row } from "./ui";
 import { FixChart } from "./visuals";
 
@@ -87,6 +88,7 @@ function FixForm({ t, tx }) {
   const [input, setInput] = useState("100");
   const { isConnected } = useAccount();
   const quote = useQuote(t, "fix", input);
+  const smusd = useSmusdRate();
   const q = quote.current ? quote.data : null;
   const dash = quote.data && !quote.current ? "…" : "–";
   const [a, err, blocker] = check(input, isConnected ? t.musd : null, "MUSD", quote);
@@ -101,7 +103,16 @@ function FixForm({ t, tx }) {
         <Row k="Fixed return" v={q?.ok ? `+${amount(q.gain, 4)} MUSD` : dash} strong />
         <Row k="Fixed APY" v={q?.ok ? percent(q.apy) : dash} strong />
       </div>
-      {q?.ok && <FixChart musdIn={a} valueAtMaturity={q.pt} apy={q.apy} maturity={t.m.maturity} />}
+      {q?.ok && (
+        <FixChart
+          musdIn={a}
+          valueAtMaturity={q.pt}
+          apy={q.apy}
+          maturity={t.m.maturity}
+          variableLow={SMUSD_APRIL_APR}
+          variableHigh={smusd.data?.apr}
+        />
+      )}
       <ActionButton
         tx={tx}
         scope="fix"

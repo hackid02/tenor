@@ -48,6 +48,9 @@ export const POOL_ABI = [
 // Mezo MUSD loans are fixed-rate (Mezo docs and app, Nov 2026).
 export const MUSD_BORROW_RATE = 0.01;
 export const MUSD_MIN_LOAN = 1800;
+// sMUSD paid about 5% in April 2026 (Mezo launch post): the low end of the
+// variable range drawn next to a fixed quote.
+export const SMUSD_APRIL_APR = 0.05;
 
 export const LINKS = {
   github: "https://github.com/hackid02/tenor",

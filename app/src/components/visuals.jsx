@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { amount, date, percent, timeLeft } from "../lib/format";
+import { dayLabel, monthName, monthStarts, tickDecimals, ticks, useHover, useWidth } from "../lib/chart";
 
 /** Small token mark used next to amounts. */
 export function TokenBadge({ sym }) {
@@ -9,40 +11,121 @@ export function TokenBadge({ sym }) {
   );
 }
 
+const YEAR = 365 * 86400;
+
+/** Spreads right-hand labels so none overlap, keeping each near its point. */
+function spread(labels, gap, top, bottom) {
+  const out = [...labels].sort((a, b) => a.y - b.y);
+  for (let i = 1; i < out.length; i++) if (out[i].y - out[i - 1].y < gap) out[i].y = out[i - 1].y + gap;
+  const over = out.length ? out[out.length - 1].y - bottom : 0;
+  if (over > 0) out.forEach((l) => (l.y -= over));
+  for (let i = 0; i < out.length; i++) out[i].y = Math.max(top + i * gap, out[i].y);
+  return out;
+}
+
 /**
- * Your deposit growing on a fixed path to its maturity value.
- * Values are the quote itself, so the chart is exact at both ends.
+ * The fixed quote as one certain path to maturity, drawn against the range
+ * sMUSD's variable rate has actually spanned this year. Values come from the
+ * quote itself, so the fixed line ends exactly at the maturity value.
  */
-export function FixChart({ musdIn, valueAtMaturity, apy, maturity }) {
-  const W = 320;
-  const H = 112;
-  const pad = { l: 4, r: 4, t: 16, b: 22 };
+export function FixChart({ musdIn, valueAtMaturity, apy, maturity, variableLow, variableHigh }) {
+  const [ref, W] = useWidth();
+  const H = 156;
+  const pad = { l: 40, r: 58, t: 14, b: 26 };
+  const pw = W - pad.l - pad.r;
+  const ph = H - pad.t - pad.b;
+  const now = useMemo(() => Math.floor(Date.now() / 1000), []);
+  const span = Math.max(1, maturity - now);
   const ok = musdIn > 0 && valueAtMaturity > musdIn && apy > 0;
-  const lo = musdIn;
-  const hi = ok ? valueAtMaturity : musdIn * 1.01;
-  const x = (f) => pad.l + f * (W - pad.l - pad.r);
-  const y = (v) => pad.t + (1 - (v - lo) / (hi - lo || 1)) * (H - pad.t - pad.b);
-  const pts = [];
-  for (let i = 0; i <= 24; i++) {
-    const f = i / 24;
-    // Compounding at the fixed rate; ends exactly at the maturity value.
-    const v = ok ? musdIn * Math.pow(valueAtMaturity / musdIn, f) : musdIn;
-    pts.push([x(f), y(v)]);
+  const band = ok && variableHigh > 0 && variableLow >= 0;
+  const lowR = band ? Math.min(variableLow, variableHigh) : 0;
+  const highR = band ? Math.max(variableLow, variableHigh) : 0;
+
+  const fixedAt = (f) => musdIn * Math.pow(valueAtMaturity / musdIn, f);
+  const varAt = (r, f) => musdIn * Math.pow(1 + r, (span / YEAR) * f);
+  const top = Math.max(valueAtMaturity, band ? varAt(highR, 1) : 0);
+  const { values: yTicks, step } = ticks(musdIn, top, 3);
+  const lo = Math.min(musdIn, yTicks[0] ?? musdIn);
+  const hi = Math.max(top, yTicks[yTicks.length - 1] ?? top) + (top - musdIn) * 0.06;
+  const x = (f) => pad.l + f * pw;
+  const y = (v) => pad.t + (1 - (v - lo) / (hi - lo || 1)) * ph;
+  const path = (fn) => {
+    let d = "";
+    for (let i = 0; i <= 48; i++) d += `${i ? "L" : "M"}${x(i / 48).toFixed(1)} ${y(fn(i / 48)).toFixed(1)}`;
+    return d;
+  };
+  const fixedD = ok ? path(fixedAt) : "";
+  let bandD = "";
+  if (band) {
+    bandD = path((f) => varAt(highR, f));
+    for (let i = 48; i >= 0; i--) bandD += `L${x(i / 48).toFixed(1)} ${y(varAt(lowR, i / 48)).toFixed(1)}`;
+    bandD += "Z";
   }
-  const line = pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
-  const area = `${line} L${x(1)} ${y(lo)} L${x(0)} ${y(lo)} Z`;
+  const dec = tickDecimals(step);
+  const months = monthStarts(now, maturity).filter((t) => {
+    const px = x((t - now) / span);
+    return px > pad.l + 44 && px < pad.l + pw - 52;
+  });
+
+  const ends = spread(
+    [
+      ok && { key: "fixed", y: y(valueAtMaturity), text: amount(valueAtMaturity, 2), cls: "ch-endlabel strong" },
+      band && { key: "hi", y: y(varAt(highR, 1)), text: amount(varAt(highR, 1), 2), cls: "ch-endlabel" },
+      band && { key: "lo", y: y(varAt(lowR, 1)), text: amount(varAt(lowR, 1), 2), cls: "ch-endlabel" },
+    ].filter(Boolean),
+    14,
+    pad.t + 4,
+    pad.t + ph + 4
+  );
+
+  const { f: hf, bind } = useHover(pad.l, pw);
+  const hover = ok && hf != null ? { f: hf, t: now + hf * span, v: fixedAt(hf) } : null;
 
   return (
-    <figure className="fixchart" aria-label={ok ? `Your ${amount(musdIn)} MUSD grows to ${amount(valueAtMaturity, 4)} MUSD by ${date(maturity)} at ${percent(apy)} fixed.` : "Enter an amount to see your fixed return."}>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-hidden="true">
-        <line x1={x(0)} x2={x(1)} y1={y(lo)} y2={y(lo)} className="fc-base" />
-        {ok && <path d={area} className="fc-area" />}
-        <path d={line} className="fc-line" />
-        <circle cx={x(1)} cy={pts[pts.length - 1][1]} r="4" className="fc-dot" />
-      </svg>
-      <figcaption>
-        <span>Today · {amount(musdIn, 2)} MUSD</span>
-        <span className="fc-end">{date(maturity)} · {ok ? amount(valueAtMaturity, 2) : "–"} MUSD</span>
+    <figure
+      className="chart fixchart"
+      aria-label={ok ? `Your ${amount(musdIn)} MUSD grows to ${amount(valueAtMaturity, 4)} MUSD by ${date(maturity)} at ${percent(apy)} fixed.` : "Enter an amount to see your fixed return."}
+    >
+      <div ref={ref} className="chart-plot" {...bind}>
+        <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+          {yTicks.map((v) => (
+            <g key={v}>
+              <line x1={pad.l} x2={pad.l + pw} y1={y(v)} y2={y(v)} className="ch-grid" />
+              <text x={pad.l - 8} y={y(v) + 3.5} textAnchor="end" className="ch-glabel">{v.toFixed(dec)}</text>
+            </g>
+          ))}
+          {months.map((t) => (
+            <line key={t} x1={x((t - now) / span)} x2={x((t - now) / span)} y1={pad.t} y2={pad.t + ph} className="ch-grid ch-vgrid" />
+          ))}
+          {band && <path d={bandD} className="ch-band" />}
+          {ok && <path d={fixedD} className="ch-line" />}
+          <circle cx={x(0)} cy={y(musdIn)} r="3" className="ch-start" />
+          {ok && <circle cx={x(1)} cy={y(valueAtMaturity)} r="4" className="ch-dot" />}
+          {ends.map((l) => (
+            <text key={l.key} x={W} y={l.y + 4} textAnchor="end" className={l.cls}>{l.text}</text>
+          ))}
+          <text x={pad.l} y={H - 6} className="ch-xlabel">Today</text>
+          {months.map((t) => (
+            <text key={t} x={x((t - now) / span)} y={H - 6} textAnchor="middle" className="ch-xlabel">{monthName(t)}</text>
+          ))}
+          <text x={pad.l + pw} y={H - 6} textAnchor="end" className="ch-xlabel">{dayLabel(maturity)}</text>
+          {hover && (
+            <g>
+              <line x1={x(hover.f)} x2={x(hover.f)} y1={pad.t} y2={pad.t + ph} className="ch-cross" />
+              <circle cx={x(hover.f)} cy={y(hover.v)} r="3.5" className="ch-dot" />
+            </g>
+          )}
+        </svg>
+        {hover && (
+          <div className="ch-tip" style={{ left: Math.min(Math.max(x(hover.f), 70), W - 70) }}>
+            <span>{dayLabel(hover.t)}</span>
+            <b className="num">{amount(hover.v, 2)} MUSD</b>
+          </div>
+        )}
+      </div>
+      <figcaption className="chart-legend">
+        <span><i className="lg-line" />Fixed {percent(apy)}</span>
+        {band && <span><i className="lg-band" />If sMUSD pays {percent(lowR, 0)}–{percent(highR)}</span>}
       </figcaption>
     </figure>
   );
