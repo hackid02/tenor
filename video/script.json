@@ -3,19 +3,74 @@
   "rate": "+4%",
   "gap": 0.45,
   "lines": [
-    { "scene": "hook", "text": "Mezo's MUSD savings rate moves. About five percent in April. About thirteen percent last week." },
-    { "scene": "promise", "text": "If you save in MUSD, you can't plan around that. Tenor lets you lock it." },
-    { "scene": "concept", "text": "Tenor puts your MUSD into Mezo's savings vault, sMUSD, and splits it in two." },
-    { "scene": "concept2", "text": "PT is worth exactly one MUSD at maturity. YT receives all the yield until then." },
-    { "scene": "reveal", "text": "This is Tenor, live on Mezo Testnet. The fixed rate sits right next to what sMUSD actually paid on mainnet." },
-    { "scene": "fix", "text": "To fix my yield, I enter an amount and Tenor quotes the PT I get, and what it's worth on December thirty-first." },
-    { "scene": "fix2", "text": "One click, one transaction. The return is locked the moment I buy." },
-    { "scene": "chart", "text": "The green line is my fixed path. The grey band is where the variable rate could land." },
-    { "scene": "sell", "text": "Or the other way round: keep the deposit as PT, sell the future yield, and get MUSD today." },
-    { "scene": "onchain", "text": "Every action is a single transaction through Mezo's concentrated liquidity pools, with quotes that match the router to the wei." },
-    { "scene": "yield", "text": "Real Mezo protocol yield has already flowed through YT: forty-one MUSD, claimed on-chain." },
-    { "scene": "carry", "text": "And for BTC borrowers: Mezo lends MUSD at a fixed one percent. Put it into PT, and the whole spread is fixed." },
-    { "scene": "proof", "text": "Verified contracts, twenty-nine tests, and every action proven on-chain." },
-    { "scene": "close", "text": "Tenor. Fixed rates for MUSD." }
+    {
+      "scene": "hook",
+      "text": "Mezo's MUSD savings rate moves. About five percent in April. About thirteen percent last week.",
+      "pause": 0.25
+    },
+    {
+      "scene": "promise",
+      "text": "If you save in MUSD, you can't plan around that. Tenor lets you lock it.",
+      "pause": 0.8
+    },
+    {
+      "scene": "concept",
+      "text": "Tenor puts your MUSD into Mezo's savings vault, sMUSD, and splits it in two.",
+      "pause": 0.1
+    },
+    {
+      "scene": "concept2",
+      "text": "PT is worth exactly one MUSD at maturity. YT receives all the yield until then.",
+      "pause": 0.7
+    },
+    {
+      "scene": "reveal",
+      "text": "This is Tenor, live on Mezo Testnet. The fixed rate sits right next to what sMUSD actually paid on mainnet.",
+      "pause": 0.5
+    },
+    {
+      "scene": "fix",
+      "text": "To fix my yield, I enter an amount and Tenor quotes the PT I get, and what it's worth on December thirty-first.",
+      "pause": 0.2
+    },
+    {
+      "scene": "fix2",
+      "text": "One click, one transaction. The return is locked the moment I buy.",
+      "pause": 0.7
+    },
+    {
+      "scene": "chart",
+      "text": "The green line is my fixed path. The grey band is where the variable rate could land.",
+      "pause": 0.5
+    },
+    {
+      "scene": "sell",
+      "text": "Or the other way round: keep the deposit as PT, sell the future yield, and get MUSD today.",
+      "pause": 0.7
+    },
+    {
+      "scene": "onchain",
+      "text": "Every action is a single transaction through Mezo's concentrated liquidity pools, with quotes that match the router to the wei.",
+      "pause": 0.7
+    },
+    {
+      "scene": "yield",
+      "text": "Real Mezo protocol yield has already flowed through YT: forty-one MUSD, claimed on-chain.",
+      "pause": 0.6
+    },
+    {
+      "scene": "carry",
+      "text": "And for BTC borrowers: Mezo lends MUSD at a fixed one percent. Put it into PT, and the whole spread is fixed.",
+      "pause": 0.7
+    },
+    {
+      "scene": "proof",
+      "text": "Verified contracts, twenty-nine tests, and every action proven on-chain.",
+      "pause": 0.6
+    },
+    {
+      "scene": "close",
+      "text": "Tenor. Fixed rates for MUSD."
+    }
   ]
 }

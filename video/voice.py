@@ -11,7 +11,17 @@ os.makedirs(OUT, exist_ok=True)
 LEAD = 0.6  # silence before the first line
 
 
-async def say(i, text):
+async def say(i, text, tries=6):
+    for n in range(tries):
+        try:
+            return await _say(i, text)
+        except Exception as e:  # the service sometimes returns no audio; retry
+            if n == tries - 1:
+                raise
+            await asyncio.sleep(1.5 * (n + 1))
+
+
+async def _say(i, text):
     words = []
     path = os.path.join(OUT, f"{i:02d}.mp3")
     com = edge_tts.Communicate(text, S["voice"], rate=S.get("rate", "+0%"), boundary="WordBoundary")

@@ -1,0 +1,537 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Tenor demo film</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --sunken: #f1f1ee; --ink: #15171a; --ink-2: #5d636c;
+    --line: #e3e3de; --line-strong: #cfcfc8; --accent: #0b7a62; --accent-soft: #e4f1ec;
+    --ui: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+    --mono: "Cascadia Mono", Consolas, ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #000; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); font-family: var(--ui); color: var(--ink); }
+  .layer { position: absolute; inset: 0; will-change: transform, opacity; }
+  .abs { position: absolute; }
+  .num { font-variant-numeric: tabular-nums; }
+  .mono { font-family: var(--mono); }
+  .eyebrow { font-size: 30px; font-weight: 600; color: var(--accent); }
+  .h1 { font-size: 76px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.06; }
+  .sub { font-size: 34px; color: var(--ink-2); line-height: 1.35; }
+  .card { position: absolute; border-radius: 22px; overflow: hidden; background: var(--surface); box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 18px 48px rgba(21,23,26,0.10); }
+  .slice { position: absolute; left: 0; background-repeat: no-repeat; }
+  .hl { position: absolute; border: 3px solid var(--accent); border-radius: 12px; pointer-events: none; }
+  .window { position: absolute; border-radius: 18px; overflow: hidden; background: var(--surface); box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 24px 64px rgba(21,23,26,0.14); }
+  .bar { height: 46px; background: var(--sunken); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 9px; padding: 0 18px; }
+  .bar i { width: 12px; height: 12px; border-radius: 50%; background: var(--line-strong); }
+  .bar .url { margin-left: 18px; padding: 5px 16px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); font: 500 17px var(--ui); color: var(--ink-2); }
+  .shot { display: block; }
+  .node { position: absolute; display: flex; align-items: center; gap: 16px; padding: 22px 28px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); }
+  .node b { display: block; font-size: 34px; font-weight: 600; }
+  .node span { display: block; font-size: 24px; color: var(--ink-2); margin-top: 2px; }
+  .coin { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font: 600 22px var(--ui); flex-shrink: 0; }
+  .stat .v { font-size: 120px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+  .stat .l { font-size: 30px; color: var(--ink-2); margin-top: 12px; line-height: 1.3; }
+  .pill-label { position: absolute; padding: 10px 18px; border-radius: 12px; background: var(--surface); border: 2px solid var(--line-strong); font-size: 26px; font-weight: 600; white-space: nowrap; }
+  #captions { position: absolute; left: 0; right: 0; bottom: 40px; display: flex; justify-content: center; pointer-events: none; }
+  #cap { max-width: 1500px; padding: 14px 28px; border-radius: 16px; background: rgba(255,255,255,0.94); border: 1px solid var(--line); font-size: 38px; font-weight: 500; line-height: 1.3; text-align: center; letter-spacing: 0.002em; }
+  #cap .w { color: var(--ink); }
+  #cap .w.next { color: var(--ink-2); opacity: 0.55; }
+  #cap .w.now { color: var(--accent); }
+  #cursor { position: absolute; left: 0; top: 0; width: 34px; height: 42px; z-index: 50; }
+  #ripple { position: absolute; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; border: 3px solid var(--accent); z-index: 49; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="layer" id="L-hook"></div>
+  <div class="layer" id="L-promise"></div>
+  <div class="layer" id="L-concept"></div>
+  <div class="layer" id="L-reveal"></div>
+  <div class="layer" id="L-fix"></div>
+  <div class="layer" id="L-chart"></div>
+  <div class="layer" id="L-onchain"></div>
+  <div class="layer" id="L-yield"></div>
+  <div class="layer" id="L-carry"></div>
+  <div class="layer" id="L-proof"></div>
+  <div class="layer" id="L-close"></div>
+  <div id="ripple"></div>
+  <svg id="cursor" viewBox="0 0 17 21"><path d="M1.5 1.5v15.2l4.1-4 2.7 6.3 2.6-1.1-2.7-6.2h5.8z" fill="#15171a" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+  <div id="captions"><div id="cap"></div></div>
+</div>
+<script src="build/data.js"></script>
+<script>
+// ---------- Motion primitives: everything is a pure function of time ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const mix = (a, b, f) => a + (b - a) * f;
+function spring(t, k = 170, d = 26) {
+  if (t <= 0) return 0;
+  const w0 = Math.sqrt(k), z = d / (2 * w0);
+  if (z < 1) { const wd = w0 * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + (z * w0 / wd) * Math.sin(wd * t)); }
+  return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
+}
+// Motion classes from the brief: UI snaps with a hair of overshoot, panels settle, type arrives fast.
+const UI = (t) => spring(t, 300, 26), PANEL = (t) => spring(t, 150, 25), TYPE = (t) => spring(t, 220, 28), CAM = (t) => spring(t, 60, 16);
+// A value with several targets: one spring per change, so any frame is renderable directly.
+function track(t, keys, fn = PANEL) { let v = keys[0][1]; for (let i = 1; i < keys.length; i++) v += (keys[i][1] - keys[i - 1][1]) * fn(t - keys[i][0]); return v; }
+const ramp = (t, a, b) => clamp((t - a) / (b - a));
+const appear = (t, at, dur = 0.22) => ramp(t, at, at + dur);
+
+// ---------- Timeline from the voice-over ----------
+const TL = window.TL, SH = window.SHOTS;
+const line = (s) => TL.lines.find((l) => l.scene === s);
+function W(scene, word, nth = 0, fallback = null) {
+  const l = line(scene); if (!l) return fallback;
+  const hits = l.words.filter((w) => w.w.toLowerCase().replace(/[^a-z0-9-]/g, "").startsWith(word.toLowerCase()));
+  return hits[nth] ? hits[nth].s : fallback ?? l.start;
+}
+const ORDER = ["hook", "promise", "concept", "reveal", "fix", "chart", "sell", "onchain", "yield", "carry", "proof", "close"];
+const SCN = {};
+ORDER.forEach((s, i) => {
+  const st = i === 0 ? 0 : line(s).start - 0.4;
+  const en = i === ORDER.length - 1 ? TL.duration : line(ORDER[i + 1]).start - 0.4;
+  SCN[s] = [st, en];
+});
+const CUES = []; // sound cues for the mix: clicks and scene changes
+ORDER.slice(1).forEach((s) => CUES.push({ t: SCN[s][0], type: "whoosh" }));
+
+// ---------- DOM helpers ----------
+const $ = (id) => document.getElementById(id);
+function el(parent, cls, html = "", style = {}) { const e = document.createElement("div"); e.className = cls; e.innerHTML = html; Object.assign(e.style, style); parent.appendChild(e); return e; }
+function set(e, { x = 0, y = 0, s = 1, o = 1, r = 0 } = {}) { e.style.transform = `translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg)`; e.style.opacity = o; e.style.visibility = o <= 0.001 ? "hidden" : "visible"; }
+const IMG = (n) => `build/shots/${n}.png`;
+// A card built from one or more horizontal slices of real screenshots, at scale K (CSS px -> stage px).
+function cardFrom(parent, slices, K, w = 420) {
+  const c = el(parent, "card", "", { width: w * K + "px", transformOrigin: "0 0" });
+  let y = 0;
+  for (const [name, a, b] of slices) {
+    const h = SH[name].h;
+    el(c, "slice", "", { top: y * K + "px", width: w * K + "px", height: (b - a) * K + "px", backgroundImage: `url(${IMG(name)})`, backgroundSize: `${w * K}px ${h * K}px`, backgroundPosition: `0 ${-a * K}px` });
+    y += b - a;
+  }
+  c.style.height = y * K + "px";
+  c.dataset.h = y;
+  return c;
+}
+function browser(parent, name, width, url) {
+  const w = el(parent, "window", `<div class="bar"><i></i><i></i><i></i><span class="url">${url}</span></div><img class="shot" src="${IMG(name)}" style="width:${width}px">`, { width: width + "px", transformOrigin: "50% 0" });
+  return w;
+}
+function hl(parent, x, y, w, h) { return el(parent, "hl", "", { left: x + "px", top: y + "px", width: w + "px", height: h + "px" }); }
+const LOGO = (size, solid = "currentColor") => `<svg width="${size}" height="${size}" viewBox="0 0 32 32"><path class="lg-solid" d="M14.5 4.5A11.5 11.5 0 0 0 14.5 27.5Z" fill="${solid}"/><path class="lg-a1" d="M17.5 6A10 10 0 0 1 25.16 9.572" fill="none" stroke="${solid}" stroke-width="3"/><path class="lg-a2" d="M26.563 11.774A10 10 0 0 1 26.563 20.226" fill="none" stroke="${solid}" stroke-width="3"/><path class="lg-a3" d="M25.16 22.428A10 10 0 0 1 17.5 26" fill="none" stroke="${solid}" stroke-width="3"/></svg>`;
+
+// Scene transition: incoming rises and settles, outgoing lifts away. Returns layer opacity and offset.
+function scene(name, t) {
+  const [a, b] = SCN[name];
+  const L = $("L-" + name);
+  if (t < a - 0.01 || t > b + 0.45) { L.style.display = "none"; return null; }
+  const inn = name === "hook" ? 1 : PANEL(t - a);
+  const out = ramp(t, b, b + 0.4);
+  L.style.display = "block";
+  L.style.opacity = Math.min(clamp(inn * 1.6), 1 - out);
+  L.style.transform = `translateY(${(1 - inn) * 90 - out * 70}px)`;
+  return t - a;
+}
+
+// ---------- Scenes ----------
+const S = {};
+
+// 1. Hook: the rate moves, 5% to 13%
+{
+  const L = $("L-hook");
+  const lab = el(L, "abs sub", "sMUSD savings rate on Mezo", { left: "160px", top: "250px", fontSize: "38px" });
+  const num = el(L, "abs num", "5%", { left: "150px", top: "300px", fontSize: "300px", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1 });
+  const when = el(L, "abs sub", "April 2026", { left: "166px", top: "640px", fontSize: "40px" });
+  const rail = el(L, "abs", "", { left: "160px", top: "780px", width: "1600px", height: "10px", borderRadius: "5px", background: "var(--line)" });
+  const fill = el(L, "abs", "", { left: "160px", top: "780px", height: "10px", borderRadius: "5px", background: "var(--accent)" });
+  const dot = el(L, "abs", "", { left: "0", top: "770px", width: "30px", height: "30px", marginLeft: "-15px", borderRadius: "50%", background: "var(--accent)", border: "5px solid #fff", boxShadow: "0 0 0 2px var(--accent)" });
+  const ticks = [0, 5, 10, 15].map((v) => el(L, "abs mono", v + "%", { left: 160 + (v / 15) * 1600 - 20 + "px", top: "810px", fontSize: "24px", color: "var(--ink-2)", width: "40px", textAlign: "center" }));
+  S.hook = (t) => {
+    const u = scene("hook", t); if (u == null) return;
+    const t5 = W("hook", "five"), t13 = W("hook", "thirteen");
+    set(lab, { y: (1 - TYPE(t - 0.15)) * 30, o: appear(t, 0.15) });
+    const v = 5 + 8 * spring(t - t13, 120, 18);
+    num.textContent = Math.round(v) + "%";
+    num.style.color = t > t13 + 0.3 ? "var(--accent)" : "var(--ink)";
+    set(num, { y: (1 - TYPE(t - 0.3)) * 60, o: appear(t, 0.3) });
+    when.textContent = t > t13 ? "Last 7 days, Mezo mainnet" : "April 2026";
+    set(when, { y: t > t13 ? (1 - UI(t - t13)) * 20 : (1 - UI(t - t5)) * 20, o: appear(t, t5 - 0.1) });
+    const railIn = PANEL(t - (t5 - 0.2));
+    rail.style.transform = `scaleX(${railIn})`; rail.style.transformOrigin = "0 0";
+    ticks.forEach((k, i) => set(k, { o: appear(t, t5 - 0.1 + i * 0.06) }));
+    const xv = 160 + (v / 15) * 1600 * railIn;
+    fill.style.width = (xv - 160) + "px";
+    dot.style.left = xv + "px";
+    set(dot, { s: UI(t - t5 + 0.1), o: appear(t, t5 - 0.1, 0.1) });
+  };
+}
+
+// 2. Promise: you can't plan around it; Tenor lets you lock it
+{
+  const L = $("L-promise");
+  const q = el(L, "abs sub", "You can’t plan around a moving rate", { left: "160px", top: "300px", fontSize: "56px", color: "var(--ink-2)" });
+  const mark = el(L, "abs", LOGO(250, "var(--accent)"), { left: "150px", top: "450px", color: "var(--accent)" });
+  const t1 = el(L, "abs h1", "Tenor lets you <span style='color:var(--accent)'>lock</span> it", { left: "450px", top: "520px", fontSize: "110px" });
+  S.promise = (t) => {
+    const u = scene("promise", t); if (u == null) return;
+    const tt = W("promise", "tenor"), tl = W("promise", "lock");
+    set(q, { y: (1 - TYPE(u - 0.1)) * 40 - TYPE(t - tt) * 40, o: appear(u, 0.1) * (1 - 0.6 * ramp(t, tt, tt + 0.3)) });
+    const sv = mark.querySelector(".lg-solid");
+    sv.style.transform = `translateX(${(1 - UI(t - tt + 0.05)) * -14}px)`; sv.style.opacity = appear(t, tt - 0.05, 0.15);
+    ["lg-a1", "lg-a2", "lg-a3"].forEach((c, i) => { const p = mark.querySelector("." + c); p.style.opacity = appear(t, tt + 0.12 + i * 0.09, 0.1); p.style.transform = `translateX(${(1 - UI(t - tt - 0.12 - i * 0.09)) * 10}px)`; });
+    set(mark, { s: 0.9 + 0.1 * PANEL(t - tt), o: 1 });
+    set(t1, { x: (1 - TYPE(t - tt - 0.15)) * 60, o: appear(t, tt + 0.1) });
+    t1.querySelector("span").style.opacity = 0.35 + 0.65 * appear(t, tl - 0.05, 0.15);
+  };
+}
+
+// 3. Concept: MUSD -> sMUSD -> PT + YT
+{
+  const L = $("L-concept");
+  const title = el(L, "abs h1", "One deposit, split in two", { left: "160px", top: "110px", fontSize: "64px" });
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", 1920); svg.setAttribute("height", 1080); svg.style.position = "absolute"; svg.style.left = 0; svg.style.top = 0;
+  svg.innerHTML = `
+    <path id="c1" d="M520 560 H 770" stroke="#0b7a62" stroke-width="4" fill="none" stroke-dasharray="10 10"/>
+    <path id="c2" d="M1150 560 C 1250 560, 1250 420, 1350 420" stroke="#0b7a62" stroke-width="4" fill="none" stroke-dasharray="10 10"/>
+    <path id="c3" d="M1150 560 C 1250 560, 1250 700, 1350 700" stroke="#0b7a62" stroke-width="4" fill="none" stroke-dasharray="10 10"/>
+    <circle id="flow" r="11" fill="#0b7a62"/>`;
+  L.appendChild(svg);
+  const n1 = el(L, "node", `<div class="coin" style="background:#15171a;color:#fff">M</div><div><b>MUSD</b><span>You deposit</span></div>`, { left: "180px", top: "500px", width: "340px" });
+  const n2 = el(L, "node", `<div class="coin" style="background:var(--sunken);color:var(--ink-2);font-size:28px">⌂</div><div><b>sMUSD</b><span>Mezo savings vault</span></div>`, { left: "770px", top: "500px", width: "380px" });
+  const n3 = el(L, "node", `<div class="coin" style="background:var(--accent);color:#fff">PT</div><div><b>PT · fixed</b><span class="d">1 MUSD at maturity, fixed</span></div>`, { left: "1350px", top: "362px", width: "520px" });
+  const n4 = el(L, "node", `<div class="coin" style="border:3px solid var(--accent);color:var(--accent)">YT</div><div><b>YT · variable</b><span class="d">All the sMUSD yield until then</span></div>`, { left: "1350px", top: "642px", width: "520px", borderStyle: "dashed" });
+  n2.querySelector(".coin").innerHTML = `<svg width="30" height="30" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="2" fill="none" stroke="#5d636c" stroke-width="1.6"/><circle cx="10" cy="10" r="3" fill="none" stroke="#5d636c" stroke-width="1.6"/></svg>`;
+  const paths = ["c1", "c2", "c3"].map((id) => svg.querySelector("#" + id));
+  const lens = paths.map((p) => p.getTotalLength());
+  S.concept = (t) => {
+    const u = scene("concept", t); if (u == null) return;
+    const tM = W("concept", "musd"), tV = W("concept", "vault"), tS = W("concept", "splits"), tPT = W("concept2", "pt"), tYT = W("concept2", "yt");
+    set(title, { y: (1 - TYPE(u - 0.05)) * 40, o: appear(u, 0.05) });
+    set(n1, { y: (1 - UI(t - tM + 0.15)) * 30, o: appear(t, tM - 0.15) });
+    set(n2, { y: (1 - UI(t - tV + 0.1)) * 30, o: appear(t, tV - 0.1) });
+    // Lines draw in, then a token flows along them.
+    const draw = (i, at) => { const f = PANEL(t - at); paths[i].style.strokeDashoffset = 0; paths[i].setAttribute("stroke-dasharray", `${lens[i] * f} ${lens[i]}`); paths[i].style.opacity = f > 0.01 ? 1 : 0; };
+    draw(0, tV - 0.3); draw(1, tS); draw(2, tS + 0.08);
+    set(n3, { x: (1 - UI(t - tS - 0.25)) * 40, o: appear(t, tS + 0.25) });
+    set(n4, { x: (1 - UI(t - tS - 0.35)) * 40, o: appear(t, tS + 0.35) });
+    const pop = (n, at) => { const k = spring(t - at, 260, 14); n.style.background = t > at ? "var(--accent-soft)" : "var(--surface)"; n.style.borderColor = t > at ? "var(--accent)" : "var(--line)"; n.style.transform += ` scale(${1 + 0.05 * Math.sin(Math.PI * clamp((t - at) / 0.35))})`; };
+    pop(n3, tPT); pop(n4, tYT);
+    // flow token: loops MUSD -> vault -> PT/YT once the fork exists
+    const flow = svg.querySelector("#flow");
+    if (t > tS + 0.5) {
+      const ph = ((t - tS - 0.5) % 2.4) / 2.4;
+      let p;
+      if (ph < 0.45) p = paths[0].getPointAtLength(lens[0] * (ph / 0.45));
+      else { const which = Math.floor((t - tS - 0.5) / 2.4) % 2 ? 2 : 1; p = paths[which].getPointAtLength(lens[which] * clamp((ph - 0.5) / 0.45)); }
+      flow.setAttribute("cx", p.x); flow.setAttribute("cy", p.y); flow.style.opacity = ph > 0.45 && ph < 0.5 ? 0 : 1;
+    } else flow.style.opacity = 0;
+  };
+}
+
+// 4. Reveal: the real app, live
+{
+  const L = $("L-reveal");
+  const cam = el(L, "abs", "", { left: 0, top: 0, width: "1920px", height: "1080px", transformOrigin: "0 0" });
+  const win = browser(cam, "hero", 1296, "tenorfi.vercel.app");
+  Object.assign(win.style, { left: "312px", top: "70px" });
+  const K = 1296 / 1440, ox = 312, oy = 70 + 46;
+  const H = SH.hero;
+  const hFixed = hl(cam, ox + (H.compare.x - 12) * K, oy + (H.compare.y - 8) * K, (H.compare.w + 24) * K, 48 * K);
+  const hVar = hl(cam, ox + (H.compare.x - 12) * K, oy + (H.compare.y + 50) * K, (H.compare.w + 24) * K, 48 * K);
+  S.reveal = (t) => {
+    const u = scene("reveal", t); if (u == null) return;
+    const tF = W("reveal", "fixed"), tA = W("reveal", "actually");
+    set(win, { y: (1 - spring(u, 90, 20)) * 700, o: 1 });
+    // Camera pushes toward the rate comparison.
+    const cx = H.compare.x + H.compare.w / 2, cy = H.compare.y + 40;
+    const z = track(t, [[0, 1], [tF - 0.2, 1.45]], CAM);
+    const fx = ox + cx * K, fy = oy + cy * K;
+    const tx = 760 - fx * z, ty = 640 - fy * z;
+    const f = CAM(t - tF + 0.2);
+    cam.style.transform = `translate(${tx * f}px, ${ty * f}px) scale(${z})`;
+    set(hFixed, { o: appear(t, tF + 0.3) * (1 - appear(t, tA - 0.1)) });
+    set(hVar, { o: appear(t, tA) });
+  };
+}
+
+// 5. Fix my yield + 7. Sell future yield (one card, real states)
+const CK = 1.2, CX = 1060, CY = 64;
+{
+  const L = $("L-fix");
+  const eb = el(L, "abs eyebrow", "Fix my yield", { left: "160px", top: "300px" });
+  const h1 = el(L, "abs h1", "Lock a fixed return", { left: "160px", top: "350px", width: "820px" });
+  const sub = el(L, "abs sub", "", { left: "160px", top: "470px", width: "760px" });
+  const cards = {
+    empty: cardFrom(L, [["fix-empty", 0, SH["fix-empty"].h]], CK),
+    ready: cardFrom(L, [["fix-approved", 0, 566], ["fix-approved", 620, SH["fix-approved"].h]], CK),
+    pending: cardFrom(L, [["fix-pending", 0, SH["fix-pending"].h]], CK),
+    done: cardFrom(L, [["fix-approved", 0, 566], ["fix-done", 592, 651], ["fix-approved", 610, SH["fix-approved"].h]], CK),
+    sell: cardFrom(L, [["sell", 0, SH.sell.h]], CK),
+  };
+  for (const c of Object.values(cards)) Object.assign(c.style, { left: CX + "px", top: CY + "px" });
+  const R = (y, h = 29) => hl(L, CX + 14 * CK, CY + y * CK, 392 * CK, h * CK);
+  const hGet = R(170), hWorth = R(199), hDone = hl(L, CX + 18 * CK, CY + 563 * CK, 384 * CK, 65 * CK);
+  const hNow = R(170), hKeep = R(199);
+  window.FIX = { cards };
+  S.fix = (t) => {
+    // L-fix carries two scenes, fix and sell, as one continuous card; the
+    // chart scene sits between them, so the card steps aside for it.
+    const [a] = SCN.fix, [, b] = SCN.sell;
+    if (t < a - 0.01 || t > b + 0.45) { L.style.display = "none"; return; }
+    const gapOut = ramp(t, SCN.fix[1], SCN.fix[1] + 0.3) * (1 - ramp(t, SCN.sell[0], SCN.sell[0] + 0.3));
+    L.style.display = gapOut > 0.999 ? "none" : "block";
+    L.style.opacity = Math.min(clamp(PANEL(t - a) * 1.6), 1 - ramp(t, b, b + 0.4), 1 - gapOut);
+    L.style.transform = `translateY(${(1 - PANEL(t - a)) * 90 - ramp(t, b, b + 0.4) * 70 - gapOut * 60}px)`;
+    const tEnter = W("fix", "enter"), tAmt = W("fix", "amount"), tPT = W("fix", "pt"), tWorth = W("fix", "worth");
+    const tClick = W("fix2", "click"), tTx = W("fix2", "transaction"), tLock = W("fix2", "locked");
+    const tSell = SCN.sell[0], tToday = W("sell", "today"), tKeep = W("sell", "keep");
+    let state = "empty";
+    if (t >= tAmt) state = "ready";
+    if (t >= tClick + 0.12) state = "pending";
+    if (t >= tTx + 0.6) state = "done";
+    if (t >= tSell + 0.55) state = "sell";
+    for (const [k, c] of Object.entries(cards)) {
+      const on = k === state;
+      const since = { empty: a, ready: tAmt, pending: tClick + 0.12, done: tTx + 0.6, sell: tSell + 0.55 }[k];
+      set(c, { o: on ? 1 : 0, y: on && k === "sell" ? (1 - UI(t - since)) * 18 : 0, s: on && k === "done" ? 1 + 0.012 * Math.sin(Math.PI * clamp((t - since) / 0.3)) : 1 });
+    }
+    // Copy on the left follows the voice.
+    const copy = t < tClick - 0.3 ? ["Fix my yield", "Lock a fixed return", "Enter an amount. Tenor quotes the PT you get and its value on Dec 31, 2026."]
+      : t < tSell + 0.3 ? ["Fix my yield", "One click, one transaction", "The return is locked the moment you buy."]
+      : ["Sell future yield", "Get your yield in MUSD today", "Keep the deposit as PT. Sell the YT. It redeems in full on Dec 31."];
+    if (eb.textContent !== copy[0]) eb.textContent = copy[0];
+    if (h1.textContent !== copy[1]) h1.textContent = copy[1];
+    if (sub.textContent !== copy[2]) sub.textContent = copy[2];
+    const since = t < tClick - 0.3 ? a : t < tSell + 0.3 ? tClick - 0.3 : tSell + 0.3;
+    set(eb, { y: (1 - TYPE(t - since)) * 24, o: appear(t, since) });
+    set(h1, { y: (1 - TYPE(t - since - 0.05)) * 36, o: appear(t, since + 0.05) });
+    set(sub, { y: (1 - TYPE(t - since - 0.12)) * 30, o: appear(t, since + 0.12) });
+    set(hGet, { o: appear(t, tPT) * (1 - appear(t, tWorth)) * (state === "ready" ? 1 : 0) });
+    set(hWorth, { o: appear(t, tWorth) * (state === "ready" ? 1 : 0) });
+    set(hDone, { o: appear(t, tLock - 0.2) * (state === "done" ? 1 : 0) });
+    set(hNow, { o: appear(t, tToday - 0.2) * (state === "sell" ? 1 : 0) * (1 - appear(t, tKeep - 0.1) * (tKeep < tToday ? 1 : 0)) });
+    set(hKeep, { o: appear(t, tKeep) * (1 - appear(t, tToday - 0.2)) * (state === "sell" ? 1 : 0) });
+    // Cursor: input, then the button, then the Sell future yield tab.
+    const B = SH["fix-approved"];
+    const P = (bx, by) => [CX + bx * CK, CY + by * CK];
+    const pIn = P(B.input.x + 90, B.input.y + 18), pBtn = P(B.button.x + 230, B.button.y + 28), pTab = P(170, 36), pOff = [1980, 900];
+    const keys = [[a, pOff], [tEnter - 0.6, pIn], [tClick - 0.7, pBtn], [tSell - 0.2, pTab], [tSell + 1.2, [1500, 1130]]];
+    const cx = track(t, keys.map(([k, p]) => [k, p[0]]), PANEL), cy = track(t, keys.map(([k, p]) => [k, p[1]]), PANEL);
+    cursorAt(cx, cy, [tEnter - 0.05, tClick, tSell + 0.4], t);
+  };
+  CUES.push({ t: W("fix", "enter") - 0.05, type: "click" }, { t: W("fix2", "click"), type: "click" }, { t: SCN.sell[0] + 0.4, type: "click" });
+}
+function cursorAt(x, y, clicks, t) {
+  const c = $("cursor"), r = $("ripple");
+  let press = 1, rip = null;
+  for (const k of clicks) { const d = t - k; if (d > -0.08 && d < 0.12) press = 0.85; if (d >= 0 && d < 0.45) rip = d; }
+  c.style.visibility = "visible";
+  c.style.transform = `translate(${x}px, ${y}px) scale(${press})`;
+  if (rip != null) { r.style.visibility = "visible"; r.style.transform = `translate(${x}px, ${y}px) scale(${0.4 + rip * 2})`; r.style.opacity = 1 - rip / 0.45; } else r.style.visibility = "hidden";
+}
+
+// 6. Chart: fixed path vs the sMUSD range
+{
+  const L = $("L-chart");
+  const B = SH["fix-approved"].chart; // in card CSS px
+  const K = 3.0;
+  const wrap = el(L, "card", "", { left: "640px", top: "150px", width: B.w * K + 40 + "px", height: B.h * K + 40 + "px" });
+  el(wrap, "slice", "", { left: "20px", top: "20px", width: B.w * K + "px", height: B.h * K + "px", backgroundImage: `url(${IMG("fix-approved")})`, backgroundSize: `${420 * K}px ${SH["fix-approved"].h * K}px`, backgroundPosition: `${-B.x * K}px ${-B.y * K}px` });
+  const eb = el(L, "abs eyebrow", "Your fixed path", { left: "160px", top: "300px" });
+  const t1 = el(L, "abs h1", "Certain", { left: "160px", top: "350px", fontSize: "72px" });
+  const t2 = el(L, "abs sub", "vs. where the variable rate could land", { left: "160px", top: "450px", width: "440px" });
+  const ox = 640 + 20, oy = 150 + 20;
+  // Points in card CSS px, from the capture: line end dot and band top end.
+  const lineEnd = [340.5 - B.x, 377.5 - B.y], bandTop = [340.5 - B.x, 326 - B.y];
+  const lab1 = el(L, "pill-label", "Fixed · 6.57%", { color: "var(--accent)", borderColor: "var(--accent)" });
+  const lab2 = el(L, "pill-label", "If sMUSD pays 5% to 12.9%", { color: "var(--ink-2)" });
+  S.chart = (t) => {
+    const u = scene("chart", t); if (u == null) return;
+    const tG = W("chart", "green"), tY = W("chart", "grey");
+    set(wrap, { s: 0.94 + 0.06 * PANEL(u), o: 1 });
+    set(eb, { y: (1 - TYPE(u)) * 24, o: appear(u, 0) });
+    set(t1, { y: (1 - TYPE(t - tG)) * 30, o: appear(t, tG - 0.1) });
+    set(t2, { y: (1 - TYPE(t - tY)) * 30, o: appear(t, tY - 0.1) });
+    Object.assign(lab1.style, { left: ox + lineEnd[0] * K - 470 + "px", top: oy + lineEnd[1] * K + 30 + "px" });
+    Object.assign(lab2.style, { left: ox + bandTop[0] * K - 560 + "px", top: oy + bandTop[1] * K - 70 + "px" });
+    set(lab1, { y: (1 - UI(t - tG)) * 16, o: appear(t, tG) });
+    set(lab2, { y: (1 - UI(t - tY)) * 16, o: appear(t, tY) });
+  };
+}
+
+// 8. On-chain: the trade in Live activity and on the Mezo explorer
+{
+  const L = $("L-onchain");
+  const items = [["One transaction", "single"], ["Through Mezo’s concentrated liquidity pools", "concentrated"], ["Quotes match the router to the wei", "quotes"]];
+  const rows = items.map(([txt], i) => el(L, "abs", `<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--accent);margin-right:22px;vertical-align:middle"></span>${txt}`, { left: "120px", top: 260 + i * 150 + "px", fontSize: "40px", fontWeight: 600, width: "560px", lineHeight: 1.2, paddingLeft: "36px", textIndent: "-36px" }));
+  const AK = 1.3;
+  const act = el(L, "card", `<img class="shot" src="${IMG("activity")}" style="width:${365 * AK}px">`, { left: "1100px", top: "70px", width: 365 * AK + "px" });
+  const hAct = hl(L, 1100 + 10 * AK, 70 + 72 * AK, 345 * AK, 60 * AK);
+  const ex = browser(L, "fix-tx", 1060, "explorer.test.mezo.org/tx/0x0194…08ce");
+  Object.assign(ex.style, { left: "780px", top: "190px" });
+  const EK = 1060 / 1440, eox = 780, eoy = 190 + 46;
+  const hS = hl(L, eox + 518 * EK, eoy + 412 * EK, 160 * EK, 32 * EK);
+  const hR = hl(L, eox + 518 * EK, eoy + 625 * EK, 192 * EK, 32 * EK);
+  const hT = hl(L, eox + 518 * EK, eoy + 666 * EK, 690 * EK, 70 * EK);
+  S.onchain = (t) => {
+    const u = scene("onchain", t); if (u == null) return;
+    rows.forEach((r, i) => { const at = W("onchain", items[i][1]) - 0.15; set(r, { x: (1 - TYPE(t - at)) * 40, o: appear(t, at) }); });
+    const tC = W("onchain", "concentrated");
+    set(act, { y: (1 - PANEL(u)) * 40, o: 1, s: 1 - 0.04 * PANEL(t - tC + 0.6) });
+    set(hAct, { o: appear(u, 0.6) * (1 - appear(t, tC - 0.6)) });
+    set(ex, { y: (1 - spring(t - tC + 0.6, 110, 20)) * 900, o: appear(t, tC - 0.6, 0.1) });
+    const tQ = W("onchain", "quotes");
+    set(hS, { o: appear(t, tC + 0.2) });
+    set(hR, { o: appear(t, tC + 0.7) });
+    set(hT, { o: appear(t, tQ) });
+  };
+}
+
+// 9. Real yield: 41.42 MUSD claimed through YT
+{
+  const L = $("L-yield");
+  const eb = el(L, "abs eyebrow", "Real Mezo protocol yield, through YT", { left: "160px", top: "250px" });
+  const big = el(L, "abs num", "0.00", { left: "150px", top: "300px", fontSize: "240px", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1, color: "var(--accent)" });
+  const unit = el(L, "abs", "MUSD claimed on-chain", { left: "166px", top: "560px", fontSize: "48px", fontWeight: 600 });
+  const path = el(L, "abs sub", "Mezo protocol fees → sMUSD → Tenor YT holders", { left: "166px", top: "640px", fontSize: "32px" });
+  const ex = browser(L, "claim-tx", 900, "explorer.test.mezo.org/tx/0x94b2…78d8");
+  Object.assign(ex.style, { left: "980px", top: "180px" });
+  const EK = 900 / 1440, eox = 980, eoy = 180 + 46;
+  const hS = hl(L, eox + 518 * EK, eoy + 412 * EK, 180 * EK, 32 * EK);
+  const hM = hl(L, eox + 518 * EK, eoy + 625 * EK, 196 * EK, 32 * EK);
+  S.yield = (t) => {
+    const u = scene("yield", t); if (u == null) return;
+    const tF = W("yield", "forty-one", 0, W("yield", "forty"));
+    set(eb, { y: (1 - TYPE(u)) * 24, o: appear(u, 0) });
+    const v = 41.42 * spring(t - (tF - 1.0), 40, 13);
+    big.textContent = v.toFixed(2);
+    set(big, { y: (1 - TYPE(u - 0.1)) * 50, o: appear(u, 0.1) });
+    set(unit, { y: (1 - TYPE(t - tF)) * 24, o: appear(t, tF - 0.1) });
+    set(path, { y: (1 - TYPE(t - tF - 0.3)) * 24, o: appear(t, tF + 0.2) });
+    set(ex, { y: (1 - spring(u - 0.3, 110, 20)) * 800, o: appear(u, 0.3, 0.1) });
+    set(hS, { o: appear(t, tF + 0.6) }); set(hM, { o: appear(t, tF + 1.1) });
+  };
+}
+
+// 10. Fixed carry for BTC borrowers
+{
+  const L = $("L-carry");
+  const eb = el(L, "abs eyebrow", "Fixed carry on your bitcoin", { left: "160px", top: "220px" });
+  const steps = [["Borrow MUSD against BTC", "1.00% fixed", "lends"], ["Put it into PT", "6.69% fixed", "put"], ["Locked spread", "5.69%", "spread"]];
+  const rows = steps.map(([a, b], i) => el(L, "abs", `<div style="font-size:40px;color:var(--ink-2)">${a}</div><div class="num" style="font-size:${i === 2 ? 96 : 72}px;font-weight:600;color:${i === 2 ? "var(--accent)" : "var(--ink)"};letter-spacing:-0.02em">${b}</div>`, { left: "160px", top: 290 + i * 190 + "px" }));
+  const K = 1.45;
+  const card = el(L, "card", `<img class="shot" src="${IMG("carry")}" style="width:${366 * K}px">`, { left: "1180px", top: "90px", width: 366 * K + "px" });
+  const R = (y) => hl(L, 1180 + 14 * K, 90 + y * K, 338 * K, 28 * K);
+  const h1 = R(208), h2 = R(237), h3 = R(266);
+  S.carry = (t) => {
+    const u = scene("carry", t); if (u == null) return;
+    set(eb, { y: (1 - TYPE(u)) * 24, o: appear(u, 0) });
+    set(card, { y: (1 - PANEL(u)) * 50, o: 1 });
+    rows.forEach((r, i) => { const at = W("carry", steps[i][2]) - 0.15; set(r, { y: (1 - TYPE(t - at)) * 36, o: appear(t, at) }); });
+    const [a1, a2, a3] = steps.map((s) => W("carry", s[2]));
+    set(h1, { o: appear(t, a1) * (1 - appear(t, a2)) }); set(h2, { o: appear(t, a2) * (1 - appear(t, a3)) }); set(h3, { o: appear(t, a3) });
+  };
+}
+
+// 11. Proof
+{
+  const L = $("L-proof");
+  const ex = browser(L, "proof", 1100, "github.com/hackid02/tenor/blob/main/PROOF.md");
+  Object.assign(ex.style, { left: "900px", top: "120px" });
+  const stats = [["8", "contracts, verified on the Mezo explorer", "verified"], ["29", "tests passing, including fork tests on Mezo Testnet", "twenty-nine"], ["10", "on-chain transactions in PROOF.md, one for every action", "every"]];
+  const els = stats.map(([v, l], i) => el(L, "abs stat", `<div class="v num">${v}</div><div class="l">${l}</div>`, { left: "160px", top: 150 + i * 250 + "px", width: "640px" }));
+  S.proof = (t) => {
+    const u = scene("proof", t); if (u == null) return;
+    set(ex, { y: (1 - PANEL(u)) * 120 - u * 18, o: 1 });
+    els.forEach((e, i) => { const at = W("proof", stats[i][2]) - 0.2; set(e, { y: (1 - TYPE(t - at)) * 40, o: appear(t, at) }); });
+  };
+}
+
+// 12. Close: logo lockup (poster frame)
+{
+  const L = $("L-close");
+  const mark = el(L, "abs", LOGO(200, "var(--accent)"), { left: "160px", top: "330px" });
+  const name = el(L, "abs", "Tenor", { left: "400px", top: "335px", fontSize: "170px", fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1 });
+  const tag = el(L, "abs", "Fixed rates for MUSD", { left: "406px", top: "530px", fontSize: "60px", color: "var(--ink-2)" });
+  const url = el(L, "abs mono", "tenorfi.vercel.app", { left: "408px", top: "640px", fontSize: "38px", color: "var(--accent)" });
+  const built = el(L, "abs", "Built on Mezo · sMUSD · Mezo Pools · Mezo Buildathon", { left: "408px", top: "710px", fontSize: "28px", color: "var(--ink-2)" });
+  S.close = (t) => {
+    const u = scene("close", t); if (u == null) return;
+    const sv = mark.querySelector(".lg-solid");
+    sv.style.transform = `translateX(${(1 - UI(u)) * -14}px)`; sv.style.opacity = appear(u, 0, 0.15);
+    ["lg-a1", "lg-a2", "lg-a3"].forEach((c, i) => { const p = mark.querySelector("." + c); p.style.opacity = appear(u, 0.15 + i * 0.09, 0.1); });
+    set(name, { x: (1 - TYPE(u - 0.1)) * 50, o: appear(u, 0.1) });
+    set(tag, { y: (1 - TYPE(u - 0.35)) * 30, o: appear(u, 0.35) });
+    set(url, { y: (1 - TYPE(u - 0.6)) * 30, o: appear(u, 0.6) });
+    set(built, { o: appear(u, 0.9, 0.4) });
+  };
+}
+
+// ---------- Captions: the spoken line in chunks, the current word in accent ----------
+const CH = [];
+for (const l of TL.lines) {
+  let cur = [];
+  l.words.forEach((w, i) => {
+    cur.push(w);
+    const txt = l.text;
+    const end = i === l.words.length - 1;
+    const punct = /[,.:;?!]$/.test(w.w) || (() => { const idx = txt.indexOf(w.w); return idx >= 0 && /[,.:;?!]/.test(txt[idx + w.w.length] || ""); })();
+    if (end || cur.length >= 8 || (punct && cur.length >= 3)) {
+      // A one- or two-word tail joins the chunk before it, so no word sits alone.
+      const prev = CH[CH.length - 1];
+      if (end && cur.length < 3 && prev && prev.text === txt && prev.words.length + cur.length <= 10) { prev.words.push(...cur); prev.e = cur[cur.length - 1].e; }
+      else CH.push({ words: cur, s: cur[0].s, e: cur[cur.length - 1].e, text: txt });
+      cur = [];
+    }
+  });
+}
+// Restore punctuation and apostrophes from the script for display.
+function display(chunk) {
+  let pos = 0; const out = [];
+  for (const w of chunk.words) {
+    const idx = chunk.text.indexOf(w.w, pos);
+    if (idx < 0) { out.push(w.w); continue; }
+    let end = idx + w.w.length;
+    while (end < chunk.text.length && /[,.:;?!']/.test(chunk.text[end]) ) end++;
+    out.push(chunk.text.slice(idx, end)); pos = end;
+  }
+  return out;
+}
+const capEl = $("cap");
+let capKey = "";
+function captions(t) {
+  const c = CH.find((c, i) => t >= c.s - 0.05 && t < (CH[i + 1] ? Math.min(CH[i + 1].s - 0.05, c.e + 0.6) : c.e + 0.8));
+  if (!c) { capEl.parentElement.style.visibility = "hidden"; return; }
+  capEl.parentElement.style.visibility = "visible";
+  const words = display(c);
+  const key = c.s + ":" + c.words.map((w) => (t >= w.s ? (t < w.e + 0.05 ? 2 : 1) : 0)).join("");
+  if (key !== capKey) {
+    capKey = key;
+    capEl.innerHTML = c.words.map((w, i) => `<span class="w ${t < w.s ? "next" : t < w.e + 0.05 ? "now" : ""}">${words[i]}</span>`).join(" ");
+  }
+}
+
+// ---------- seek(t): the whole film at time t ----------
+window.DURATION = TL.duration;
+window.CUES = CUES;
+window.seek = (t) => {
+  $("cursor").style.visibility = "hidden"; $("ripple").style.visibility = "hidden";
+  for (const k of ["hook", "promise", "concept", "reveal", "chart", "onchain", "yield", "carry", "proof", "close"]) S[k](t);
+  S.fix(t);
+  captions(t);
+  return true;
+};
+window.ready = Promise.all([...document.images].map((i) => i.decode().catch(() => null)).concat([...new Set([...document.querySelectorAll(".slice")].map((s) => s.style.backgroundImage.slice(5, -2)))].map((src) => { const i = new Image(); i.src = src; return i.decode().catch(() => null); })));
+// Live preview when opened in a normal browser.
+if (!navigator.webdriver && !location.search.includes("still")) {
+  const t0 = performance.now();
+  (function loop() { window.seek(((performance.now() - t0) / 1000) % TL.duration); requestAnimationFrame(loop); })();
+} else if (location.search.includes("t=")) {
+  window.seek(Number(new URLSearchParams(location.search).get("t")));
+}
+</script>
+</body>
+</html>
