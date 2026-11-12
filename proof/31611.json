@@ -88,6 +88,14 @@
       "block": 16694614,
       "time": "2026-11-10T14:18:27.437Z",
       "yieldMusd": "41.4184"
+    },
+    {
+      "action": "redeemPT",
+      "what": "Maturity: 22.2137 PT -> 22.2137 MUSD, 1:1",
+      "tx": "0xc15abdb8c630df4342834c900534dc459fb5d7599f8e971dcc0e70f5deb5d249",
+      "link": "https://explorer.test.mezo.org/tx/0xc15abdb8c630df4342834c900534dc459fb5d7599f8e971dcc0e70f5deb5d249",
+      "block": 16733811,
+      "time": "2026-11-12T12:10:52.497Z"
     }
   ]
 }
