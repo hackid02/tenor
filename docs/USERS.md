@@ -1,11 +1,11 @@
 # Who has used Tenor
 
-Read from Mezo Testnet at block 16733817 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
+Read from Mezo Testnet at block 16734395 by `node scripts/users.js`. Every wallet that traded through `TenorRouter` or called a `TenorMarket` is listed. Approvals and pool seeding are not counted.
 
 | | Wallets | Transactions |
 |---|---|---|
-| **Outside wallets** (not on the team or QA list) | **2** | **3** |
-| Team and Team QA wallets ([docs/QA.md](QA.md)) | 13 | 42 |
+| **Outside wallets** (not on the team or QA list) | **3** | **7** |
+| Team and Team QA wallets ([docs/QA.md](QA.md)) | 14 | 43 |
 
 ## Outside wallets
 
@@ -13,6 +13,7 @@ Read from Mezo Testnet at block 16733817 by `node scripts/users.js`. Every walle
 |---|---|---|
 | [`0x9bFD7dec27547FC7b499158422656703439e5Ae8`](https://explorer.test.mezo.org/address/0x9bFD7dec27547FC7b499158422656703439e5Ae8) | Fix yield | [0x638d388b…](https://explorer.test.mezo.org/tx/0x638d388b8c87a6178445983e6ff74762375c32fdfc00a7ebebf84202750d6bfe) |
 | [`0x19B3a1E14aD4073D8A30160d0eea0294F7795cA3`](https://explorer.test.mezo.org/address/0x19B3a1E14aD4073D8A30160d0eea0294F7795cA3) | Sell future yield, Buy YT | [0xfc04ac45…](https://explorer.test.mezo.org/tx/0xfc04ac4501c43682fc04f073e5550ea162a56609fe23a3ca9c869155a3b85149) |
+| [`0xb9C37b75cF53EBfeC9eAf16b35E77541aB941556`](https://explorer.test.mezo.org/address/0xb9C37b75cF53EBfeC9eAf16b35E77541aB941556) | Fix yield ×2, Sell future yield ×2 | [0x49e33de1…](https://explorer.test.mezo.org/tx/0x49e33de19966bf03927076badcfc87c69af069f1e968a0ba759076bb0e1f774c) |
 
 ## Team wallets
 
@@ -31,3 +32,4 @@ Read from Mezo Testnet at block 16733817 by `node scripts/users.js`. Every walle
 | `0x66F18163D75E2848cE41fFDFF0e7455b46475A00` | Team QA · Gina | Fix yield, Sell PT |
 | `0x73D34E243BE04aDc3f9CAe5d86B35530a45d05Ac` | Team QA · Hana | Fix yield ×2, Sell future yield, Buy YT, Sell YT, Sell PT |
 | `0x61477A660387ac917830a8Ca66e3f1B89460361a` | Team QA · Demo | Fix yield |
+| `0x8dEB09C94950bD2825079605b8594c3392071A1A` | Team QA · Jide | Fix yield |

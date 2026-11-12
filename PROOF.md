@@ -45,7 +45,7 @@ Everything below is live on **Mezo Testnet** (chain 31611) and can be checked on
 
 ## Who else has used it
 
-Read from the chain by `node scripts/users.js`: **2 outside wallets** (3 transactions) and 13 team and Team QA wallets. Every wallet is listed in [docs/USERS.md](docs/USERS.md); the QA runs are in [docs/QA.md](docs/QA.md).
+Read from the chain by `node scripts/users.js`: **3 outside wallets** (7 transactions) and 14 team and Team QA wallets. Every wallet is listed in [docs/USERS.md](docs/USERS.md); the QA runs are in [docs/QA.md](docs/QA.md).
 
 ## Design note: why CL pools
 
