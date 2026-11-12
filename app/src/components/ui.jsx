@@ -1,4 +1,4 @@
-import { useAccount, useSwitchChain } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 import { ConnectButton } from "./Connect";
 import { TokenBadge } from "./visuals";
 import { LINKS, mezoTestnet } from "../config";
@@ -96,6 +96,28 @@ export function ActionButton({ tx, scope, blocker, approve, children, onClick })
   );
 }
 
+/** One tap for what testers did by hand: disconnect, then connect the same wallet again. */
+function ReconnectButton({ onDone }) {
+  const { connector } = useAccount();
+  const { disconnectAsync } = useDisconnect();
+  const { connectAsync } = useConnect();
+  async function go() {
+    const c = connector;
+    try {
+      await disconnectAsync();
+      if (c) await connectAsync({ connector: c });
+      onDone?.();
+    } catch {
+      // The user closed the wallet prompt; the status stays so they can try again.
+    }
+  }
+  return (
+    <button type="button" className="link-btn status-action" onClick={go}>
+      Reconnect wallet
+    </button>
+  );
+}
+
 export function TxStatus({ tx, scope }) {
   const s = tx.state;
   if (s.status === "idle" || s.scope !== scope) return null;
@@ -110,6 +132,7 @@ export function TxStatus({ tx, scope }) {
   return (
     <div className={`status ${s.status}`} role={s.status === "error" ? "alert" : "status"}>
       <span>{text}</span>
+      {s.status === "error" && s.reconnect && <ReconnectButton onDone={tx.reset} />}
       {link && (
         <a href={link} target="_blank" rel="noreferrer">
           Explorer

@@ -189,6 +189,7 @@ button { font: inherit; color: inherit; }
 .tip { margin: 10px 0 0; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--accent-soft); font-size: 13px; }
 .empty { margin: 4px 0; color: var(--ink-2); font-size: 14px; }
 
+.status-action { white-space: nowrap; font-weight: 600; color: inherit; text-decoration: underline; }
 .step-hint { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); text-align: center; }
 .status {
   display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 12px;

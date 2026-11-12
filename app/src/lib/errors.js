@@ -22,7 +22,7 @@ export function explain(e) {
     if (name && MESSAGES[name]) return MESSAGES[name];
     if (name) return `The contract rejected this (${name}).`;
     if (e.walk((x) => x?.code === 4100) || /not been authori[sz]ed/i.test(e.message)) {
-      return "Your wallet hasn’t authorized this site. Tap Disconnect, then Connect wallet again.";
+      return "Your wallet hasn’t authorized this site on Mezo Testnet yet.";
     }
     if (/insufficient funds/i.test(e.message)) return "Not enough BTC for gas. Get test BTC from the Mezo faucet.";
     return e.shortMessage || "Something went wrong. Try again.";
