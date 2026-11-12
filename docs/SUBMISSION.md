@@ -55,7 +55,7 @@ Everything (new project):
 - deployment of two markets with seeded CL pools; every action run on-chain with explorer links
 - the web app with live on-chain data (fixed rate, sMUSD's real 7-day rate, rate history, activity feed)
 - `TenorQuoter` (exact on-chain quotes) and Team QA: 8 persona wallets, 23/23 on-chain checks, 10/10 website checks and a final full click-through, 11 bugs found and fixed (https://github.com/hackid02/tenor/blob/main/docs/QA.md)
-- outside testers trading on the live app, counted from the chain and listed apart from team wallets (https://github.com/hackid02/tenor/blob/main/docs/USERS.md)
+- 3 outside testers (7 transactions so far), counted from the chain and listed apart from team wallets (https://github.com/hackid02/tenor/blob/main/docs/USERS.md). What they said: "easy to use and get through"; their one bug (a wallet "not authorized" error on MetaMask) is fixed (https://github.com/hackid02/tenor/blob/main/docs/FEEDBACK.md)
 - a design change mid-wave: a Mezo stable pool moved the fixed APY from 11.8% to 2.4% after small trades, so Tenor moved to concentrated liquidity (the same 50 MUSD trade now locks 11.35% against a 12.00% quote). Both sets of transactions are in the proof.
 
 **Future milestones:**
