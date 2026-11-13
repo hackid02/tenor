@@ -2,14 +2,31 @@
 
 **Fixed rates on Mezo's MUSD Savings Vault.**
 
+> **Live app: [tenorfi.vercel.app](https://tenorfi.vercel.app)** on Mezo Testnet · **Demo video (1:35): [youtu.be/IBrvZi0Eaug](https://youtu.be/IBrvZi0Eaug)** · On-chain proof: [PROOF.md](PROOF.md)
+
+[![Tenor on Mezo Testnet: 6.69% fixed on MUSD until Dec 31, 2026, next to what sMUSD paid on Mezo mainnet over the last 7 days, the fixed rate after every trade, and the Fix my yield trade card](docs/screenshots/app.png)](https://tenorfi.vercel.app)
+
+<table>
+  <tr>
+    <td width="50%" valign="top"><img src="docs/screenshots/fix-my-yield.png" alt="Fix my yield: 100 MUSD quotes 100.81 PT, worth 100.81 MUSD on Dec 31, with the fixed path charted against the range sMUSD has paid"></td>
+    <td width="50%" valign="top"><img src="docs/screenshots/live-activity.png" alt="Live activity: every Tenor trade read from the chain, with team and QA wallets labelled"></td>
+  </tr>
+  <tr>
+    <td valign="top"><b>Fix my yield.</b> The quote shows what you get and what it is worth at maturity, charted against the range sMUSD has paid.</td>
+    <td valign="top"><b>Live activity.</b> Every trade, read from the chain. Team and QA wallets are labelled; outside testers are not.</td>
+  </tr>
+</table>
+
+**One transaction, on Mezo.** A real 10 MUSD trade on the [Mezo explorer](https://explorer.test.mezo.org/tx/0x01949b56380d21c6e0cd67231c438aecf25393437c8615253240dd79e30d08ce): `buyPT` on the verified `TenorRouter`, 10 MUSD in, 10.0864 PT out.
+
+![A real Tenor trade on the Mezo testnet explorer: Success, method buyPT, verified TenorRouter contract, 10 MUSD in and 10.0864 PT-sMUSD-DEC26 out](docs/screenshots/trade-on-mezo-explorer.png)
+
 Mezo's savings vault (sMUSD) pays a variable rate: about 5% in April 2026, about 13% in the week of Nov 2, 2026. Tenor splits an sMUSD position into two tokens with one maturity date:
 
 - **PT (principal token)** redeems for exactly 1 MUSD at maturity. Buying PT below 1 MUSD locks a fixed rate.
 - **YT (yield token)** receives all the sMUSD yield until maturity, paid in MUSD. Selling YT pays that yield up front.
 
 PT trades against MUSD in a concentrated-liquidity pool on Mezo Pools, so every action is one transaction.
-
-> **Live app: [tenorfi.vercel.app](https://tenorfi.vercel.app)** on Mezo Testnet · **Demo video (1:35): [youtu.be/IBrvZi0Eaug](https://youtu.be/IBrvZi0Eaug)** · On-chain proof: [PROOF.md](PROOF.md)
 
 ---
 
@@ -60,6 +77,8 @@ Every user action has been run on-chain. Transaction links: [PROOF.md](PROOF.md)
 MUSD ──► sMUSD ──┤
  (deposit)       └──────────────► YT  (sMUSD yield until maturity)
 ```
+
+![How it works in the app: MUSD goes into Mezo's sMUSD savings vault and is split into PT (worth 1 MUSD at maturity) and YT (earns the sMUSD yield until then)](docs/screenshots/how-it-works.png)
 
 - **`TenorMarket`** (one per maturity) deposits MUSD into sMUSD and mints PT and YT 1:1. It claims sMUSD's MUSD yield and distributes it to YT holders with a per-token accumulator. YT transfers checkpoint both sides first, so yield earned before a transfer stays with the sender.
 - **`TenorQuoter`** gives the app exact quotes: it runs the real pool swap and reverts inside the swap callback with the result, so it is correct for any liquidity in the pool and never moves funds. It also reports the largest size the pool can fill.
